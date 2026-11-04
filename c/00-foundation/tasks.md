@@ -11,6 +11,7 @@ Exercises are labeled **easy → medium → stretch**, with **starter demos** on
 - Understand variables, control flow, functions, arrays, strings, and gentle pointers.
 - See **why** low-level mistakes become security bugs (buffer overflows, wrong addresses, missing bounds).
 - Use a `struct` and a simple two-file split (`.h` / `.c`) once.
+- Clear the **boss challenge** (Module J) before moving to chapter 01.
 
 ## Book guides (concept-only)
 - **Head First C** (Griffiths & Griffiths)
@@ -50,12 +51,13 @@ One `.c` file → one program is enough until Module I.
 | G | [Strings](modules/G-strings.md) | `'\0'`, `fgets` | **Buffer overflow** (`scanf("%s")` without width) |
 | H | [Pointers gently](modules/H-pointers.md) | `&`, `*`, swap | Wrong pointer → wrong memory; use-after-scope |
 | I | [Structs & multi-file](modules/I-structs-multi-file.md) | `struct`, `.h`/`.c` | API boundaries & input validation |
+| J | [Boss challenge](modules/J-boss-challenge.md) | **All of A–I** | Safe input, bounds, duplicates — gate to ch. 01 |
 
-Finish one module before starting the next.
+Finish A–I in order, then clear **J**. Treat J as a pass/fail gate: hints are allowed; a full pasted solution is not.
 
 ---
 
 ## C track notes
 - Re-read **Case study** whenever an exercise feels mysterious — that section is the “why” for low-level C.
-- After this chapter, continue to **01 — Low-level mental model**, then tooling and deeper memory work.
+- After **passing Module J**, continue to **01 — Low-level mental model**, then tooling and deeper memory work.
 - Chapter **11 — CTF / Pwn Lab** builds directly on habits you form here (bounds, addresses, ownership).

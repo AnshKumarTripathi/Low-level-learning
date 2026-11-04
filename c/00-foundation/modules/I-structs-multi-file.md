@@ -204,4 +204,5 @@ Compile: `gcc main.c person.c -o person_demo`
 
 ## After this module
 
-Continue to **[01 — Low-level mental model](../../01-low-level-mental-model/tasks.md)** for bits, addresses, compile/link, and first `malloc`/`free`.
+Do the **[J — Boss challenge](J-boss-challenge.md)** next (combines Modules A–I).  
+Only after you pass J, continue to **[01 — Low-level mental model](../../01-low-level-mental-model/tasks.md)**.

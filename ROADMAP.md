@@ -44,7 +44,7 @@ The C and C++ tracks share the **same goal**, but the prompts are **adapted** so
 Numbering below matches the **`c/`** track (`00`…`13`). On `c_plus/`, the old `00`…`12` layout still applies (no separate low-level mental-model chapter yet).
 
 ### 00) Foundation (Absolute Beginner Syntax) — `c/`
-You will learn C from zero: what a program is, `printf`/`scanf`, variables, operators, `if`/`while`/`for`/`switch`, functions, arrays, strings, gentle pointers, and a tiny `struct` + `.h`/`.c` split. Content lives in `c/00-foundation/modules/` (one file per topic) with **security-oriented case studies** (wrong addresses, buffer overflows, dangling pointers). Aimed at non-programmers.
+You will learn C from zero: what a program is, `printf`/`scanf`, variables, operators, `if`/`while`/`for`/`switch`, functions, arrays, strings, gentle pointers, and a tiny `struct` + `.h`/`.c` split. Content lives in `c/00-foundation/modules/` (one file per topic) with **security-oriented case studies** (wrong addresses, buffer overflows, dangling pointers). Ends with a **boss challenge** (Module J) that integrates A–I — pass it before chapter 01. Aimed at non-programmers.
 
 ### 01) Low-level Mental Model — `c/`
 You will build a CS:APP-style picture of the machine: bits/bytes/hex, addresses, endianness, the compile/link pipeline, and stack vs heap with a first `malloc`/`free`.
