@@ -6,14 +6,20 @@ This repo is a **chapterized set of exercises** to learn low-level programming b
   - `c/` — C-first: explicit ownership, manual lifetimes, error codes.
   - `c_plus/` — C++: RAII, invariants via types, move semantics, (careful) use of the standard library.
 
-Each chapter folder contains a `tasks.md` file with **problems + constraints + desired output**. You write the code yourself.
+Each chapter folder contains a `tasks.md` file that teaches the chapter's topic (with tested, runnable examples) and then sets **problems + constraints + desired output**. You write the code yourself.
 
-**C early path note:** chapters `c/00-foundation` and `c/01-low-level-mental-model` use **Learn → Why it matters → Case study → Try → Exercise**. Chapter `00` splits each topic into a file under `c/00-foundation/modules/` so case studies stay readable. Later C chapters stay exercise-first.
+**Chapter shapes:** `c/00-foundation` uses **Learn → Why it matters → Case study → Try → Exercise**, one file per module under `c/00-foundation/modules/`; `c/01-low-level-mental-model` uses **Learn → Try → Exercise**. Chapters `c/02` onward have objectives, a **Learn** section, exercises with **hints**, a **checkpoint quiz** with answers, a recap and a spaced review.
 
-**C++ track note:** `c_plus/` numbering is **unchanged for now** (still `00`…`12` as before). The renumbered beginner on-ramp applies to **`c/` only**.
+**Solutions:** tested solutions with design notes are in [`solutions/`](solutions/README.md): every exercise of `c/00` and `c/01`, one core exercise per chapter for `c/02`–`c/12`, and one per C++ bridge chapter. Attempt each exercise first.
+
+**C++ track note:** `c_plus/` is numbered `00`…`12`. It has no separate low-level mental-model chapter, so from tooling onward each `c_plus/` chapter is one number lower than the `c/` chapter on the same topic (for example `c/02-tooling-build` matches `c_plus/01-tooling-build`).
+
+**Track order:** do `c/` chapters 00–04 first. Then work through the **[C++ bridge](c_plus/bridge/README.md)** (B1–B8: from C to modern C++) before the `c_plus/` exercise chapters. C chapters 05 onward can run in parallel with the bridge.
 
 ## How to use this repo
 
+- **Start here:** [Setup & getting unstuck](00-setup/README.md) — install a compiler, learn the terminal basics, and read your first errors.
+- Unknown word? Check the [Glossary](GLOSSARY.md).
 - **Do chapters in order**. Later chapters assume earlier skills (debugging, parsing discipline, I/O).
 - For each exercise:
   - Write down a tiny spec (inputs/outputs and edge cases).
@@ -41,7 +47,9 @@ The C and C++ tracks share the **same goal**, but the prompts are **adapted** so
 
 ## Chapters (what you will build)
 
-Numbering below matches the **`c/`** track (`00`…`13`). On `c_plus/`, the old `00`…`12` layout still applies (no separate low-level mental-model chapter yet).
+Numbering below matches the **`c/`** track (`00`…`13`, plus `02b`, `04b` and `10b`, which were added between existing chapters). For `c_plus/`, subtract one from chapter 02 onward (see the C++ track note above); the `b` chapters have no C++ twin.
+
+**Milestone projects** M1–M5 sit between chapters and combine several of them: see [milestones/](milestones/README.md).
 
 ### 00) Foundation (Absolute Beginner Syntax) — `c/`
 You will learn C from zero: what a program is, `printf`/`scanf`, variables, operators, `if`/`while`/`for`/`switch`, functions, arrays, strings, gentle pointers, and a tiny `struct` + `.h`/`.c` split. Content lives in `c/00-foundation/modules/` (one file per topic) with **security-oriented case studies** (wrong addresses, buffer overflows, dangling pointers). Ends with a **boss challenge** (Module J) that integrates A–I — pass it before chapter 01. Aimed at non-programmers.
@@ -52,29 +60,38 @@ You will build a CS:APP-style picture of the machine: bits/bytes/hex, addresses,
 ### 02) Tooling & Build Discipline
 You will set up repeatable builds, basic debugging, and runtime checking tools so every later chapter is faster.
 
+### 02b) C Language II
+You will learn the rest of everyday C: `const` pointers, `enum`/`union`/`typedef`, `static`/`extern`, macros, function pointers, variadic functions and robust number parsing.
+
 ### 03) Memory, Pointers, Lifetimes
-You will build small containers and learn to reason about stack/heap, alignment, UB, and lifetime boundaries.
+You will build small containers and learn to reason about stack/heap, alignment, UB, and lifetime boundaries. Then build milestone **M1** (`strlib`).
 
 ### 04) Data Representation & Bitwise Thinking
 You will implement byte/bit-level utilities and learn endianness and integer edge cases.
+
+### 04b) Data Structures
+You will implement a linked list, a hash map, a binary heap and a binary search tree, with Big-O analysis and tests. Then build milestone **M2** (`hashmap`).
 
 ### 05) Binary Files & Parsing
 You will parse structured bytes safely (lengths, bounds, offsets) and build a small hexdump-like tool.
 
 ### 06) OS I/O, Files, Processes
-You will implement file and process utilities and learn the OS boundary (handles, descriptors, exit codes).
+You will implement file and process utilities and learn the OS boundary (handles, descriptors, exit codes). Then build milestone **M3** (`minish`).
 
 ### 07) Networking: Sockets & Protocols
 You will implement TCP/UDP programs and a tiny framed protocol with robust parsing.
 
 ### 08) Concurrency & Synchronization
-You will build a work queue and learn to avoid races, deadlocks, and shared-state pitfalls.
+You will build a work queue and learn to avoid races, deadlocks, and shared-state pitfalls. Then build milestone **M4** (`kvserver`).
 
 ### 09) Memory Tooling & Allocators
-You will implement a tiny allocator and a leak tracker-style tool to understand real-world memory behavior.
+You will implement a tiny allocator and a leak tracker-style tool to understand real-world memory behavior. Then build milestone **M5** (`mymalloc`).
 
 ### 10) Debugging & Reverse Basics
 You will learn how binaries look (symbols, stack frames) and how to inspect behavior with debugger and disassembly.
+
+### 10b) Performance
+You will measure code correctly, see the memory hierarchy at work (cache lines, locality, data layout), and profile before optimising.
 
 ### 11) CTF / Pwn Lab (Local-only)
 You will build intentionally vulnerable programs and then harden them, learning exploit classes and mitigations.

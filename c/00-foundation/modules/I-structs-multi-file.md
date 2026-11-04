@@ -1,6 +1,6 @@
 # Module I — Structs and a tiny multi-file program
 
-[← H — Pointers](H-pointers.md) · [Chapter index](../tasks.md)
+[← H — Pointers](H-pointers.md) · [Chapter index](../tasks.md) · [Next: J — Boss challenge →](J-boss-challenge.md)
 
 ---
 
@@ -9,6 +9,7 @@
 A **`struct`** groups related fields:
 
 ```c
+/* fragment: not a complete program — add #include lines and main() to run it */
 struct Person {
     char name[32];
     int age;
@@ -18,11 +19,22 @@ struct Person p;
 p.age = 20;
 ```
 
+When you have a **pointer** to a struct, reach a field with `->`. `ptr->age` means exactly `(*ptr).age`:
+
+```c
+/* fragment: not a complete program — add #include lines and main() to run it */
+struct Person p;
+struct Person *ptr = &p;
+ptr->age = 21;   /* same as (*ptr).age = 21; this changes p.age */
+```
+
+Rule of thumb: a struct variable uses `.`, a pointer to a struct uses `->`.
+
 **Multi-file basics**:
 - **`.h` header** — declarations (types, function prototypes).
 - **`.c` source** — definitions.
 - `#include "person.h"` pulls declarations in.
-- Compile together: `gcc main.c person.c -o prog`
+- Compile together: `gcc -std=c17 -Wall -Wextra -g main.c person.c -o prog`
 
 Keep APIs tiny: two functions is enough.
 
@@ -43,6 +55,7 @@ Many vulnerabilities are **missing validation at the API edge**: trust user inpu
 ## Case study: unchecked copy into a struct field
 
 ```c
+/* fragment: not a complete program — add #include lines and main() to run it */
 struct User {
     char name[16];
     int is_admin;
@@ -59,7 +72,14 @@ void set_name(struct User *u, const char *input)
 2. Long input overwrites `name`, then **`is_admin`**.
 3. Attacker may flip `is_admin` to non-zero without a proper login — classic **stack/struct layout** abuse (simplified; real layouts vary).
 
-**Safer direction**: bounded copy (`strncpy` with care, or loop with max length), always null-terminate, validate lengths before copy.
+**Safer direction**: validate the length before copying, then use a bounded copy that always null-terminates:
+
+```c
+/* fragment: not a complete program — add #include lines and main() to run it */
+snprintf(u->name, sizeof u->name, "%s", input);   /* never writes past name, always ends with '\0' */
+```
+
+Avoid `strncpy` for this: if `input` is too long it copies exactly `n` bytes and does **not** add a `'\0'`, so the field is left as an unterminated string.
 
 ---
 
@@ -71,12 +91,11 @@ Define `struct Point { int x; int y; };`, set values, print them.
 
 ## Exercises
 
-Work **in order**. **Starter demos** show the pattern — run them, then do the exercise yourself.
+Work **in order**. Each exercise starts with a **worked example** that solves a simpler version. Run it and understand it, then solve **Your task** yourself. Solutions: [`solutions/`](../../../solutions/c/00-foundation/README.md) — try first.
 
-### Exercise I1 — Person record (single file) *(easy)*
-**Task**: Define `struct Person { char name[32]; int age; };`. Read `name` and `age` (one line: `name age`, name has no spaces). Print `name=... age=...`.
+### Exercise I1 — Distance between points *(easy)*
 
-**Starter demo**:
+**Worked example** — read one record into a struct and print it:
 
 ```c
 #include <stdio.h>
@@ -89,7 +108,10 @@ struct Person {
 int main(void)
 {
     struct Person p;
-    scanf("%31s %d", p.name, &p.age);
+    if (scanf("%31s %d", p.name, &p.age) != 2) {
+        fprintf(stderr, "error: expected: name age\n");
+        return 1;
+    }
     printf("name=%s age=%d\n", p.name, p.age);
     return 0;
 }
@@ -97,17 +119,21 @@ int main(void)
 
 `%31s` leaves room for the `'\0'` in a 32-byte array — a small safety habit.
 
-**Desired output** (for `Ada 36`):
-- `name=Ada age=36`
+Output of the worked example for `Ada 36`: `name=Ada age=36`.
+
+**Your task**: Define `struct Point { int x; int y; };`. Write `int dist2(struct Point a, struct Point b)` that returns the **squared** distance `(a.x - b.x)² + (a.y - b.y)²` (squared, so no square root is needed). Read two points as four integers `x1 y1 x2 y2` and print the result.
+
+**Desired output**:
+- `0 0 3 4` → `dist2=25`
+- `-1 2 2 -2` → `dist2=25`
 
 ---
 
-### Exercise I2 — Reject overlong names *(medium)*
-**Task**: Same as I1, but if the name is longer than 31 characters, print `error: name too long` and exit non-zero.
+### Exercise I2 — Validated inventory item *(medium)*
 
-**Hint**: read the line with `fgets`, find the space between name and age yourself, or check name length after read. A simple approach: read with `fgets`, parse manually.
-
-**Starter demo** (read line first, then parse):
+**Worked example** — read a whole line first, then take it apart. Two new tools:
+- `sscanf(line, format, ...)` works like `scanf` but reads from a string. It returns how many fields it filled.
+- `snprintf(dst, sizeof dst, "%s", src)` copies at most `sizeof dst - 1` characters and always adds `'\0'`.
 
 ```c
 #include <stdio.h>
@@ -133,7 +159,7 @@ int main(void)
     }
 
     if (strlen(name) > 31) {
-        printf("error: name too long\n");
+        fprintf(stderr, "error: name too long\n");
         return 1;
     }
 
@@ -145,7 +171,20 @@ int main(void)
 }
 ```
 
-You may use a hand-written loop instead of `sscanf`/`snprintf` if you prefer — the goal is **check length before copy**.
+Output of the worked example: `Ada 36` → `name=Ada age=36`; a name longer than 31 characters → `error: name too long`.
+
+**Your task**: Define `struct Item { char name[16]; int qty; };`. Read one line `name qty`. Check, in this order, and print errors to stderr with exit `1`:
+- the line does not contain a name and a number → `error: bad input`
+- name longer than 15 characters → `error: name too long`
+- `qty < 0` → `error: bad qty`
+
+Otherwise store both in a `struct Item` and print it. The goal is **check before copy**.
+
+**Desired output**:
+- `bolt 40` → `item=bolt qty=40`
+- `bolt -1` → `error: bad qty`
+- `averyveryverylongname 3` → `error: name too long`
+- `bolt` → `error: bad input`
 
 ---
 
@@ -191,7 +230,7 @@ int main(void)
 }
 ```
 
-Compile: `gcc main.c person.c -o person_demo`
+Compile: `gcc -std=c17 -Wall -Wextra -g main.c person.c -o person_demo`
 
 **Desired output**: same as I1 on success; `error: name too long` on overlong name.
 

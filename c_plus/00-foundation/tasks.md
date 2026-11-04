@@ -1,6 +1,19 @@
 # 00 — Foundation (C++, in-depth)
 
+[← C++ bridge](../bridge/README.md) · [Roadmap](../../ROADMAP.md) · [Next: 01 — Tooling →](../01-tooling-build/tasks.md)
+
+> **Prerequisite:** the [C++ bridge](../bridge/README.md) (B1–B8). This chapter is practice for it: each subchapter below names the bridge chapter that teaches what it needs.
+
 This chapter is intentionally large. Treat each section as a “subchapter” and complete it before moving on.
+
+| Subchapter | Taught in |
+|------------|-----------|
+| A — Program structure | B1 |
+| B — Types and parsing | B1, B7 (`std::from_chars`) |
+| C — References, const, copy/move | B1, B3 |
+| D — RAII and error policy | B2, B7 |
+| E — Templates | B5 |
+| F — Multi-file | C 00-I, B5 (templates in headers) |
 
 ## Objectives
 - Be comfortable writing small C++ programs without guessing.
@@ -27,9 +40,10 @@ This chapter is intentionally large. Treat each section as a “subchapter” an
 
 **Desired output**:
 - For `prog a b`, print:
-  - `argv[0]=prog`
+  - `argv[0]=<program name>`
   - `argv[1]=a`
   - `argv[2]=b`
+- `argv[0]` is the program name as the OS passed it. On Windows it is often the full path to the `.exe`, so it will not be exactly `prog`.
 
 ### Exercise A2 — Exit codes and stderr
 **Task**: Add `--fail` flag that prints an error to stderr and exits with code `2`.

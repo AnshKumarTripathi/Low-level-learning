@@ -1,0 +1,20 @@
+list
+add Ada 1 90
+add Bob 2 80
+add Ada 1 70
+list
+find 2
+find 99
+avg
+add TooLongNameThatClearlyExceedsThirtyOneCharacters 3 50
+add Eve 3 101
+add Eve 3 50
+add Carol 4 70
+add Dan 5 60
+add Eli 6 55
+add Fay 7 40
+add Gus 8 30
+add Max 9 20
+avg
+bogus
+quit

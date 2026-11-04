@@ -1,6 +1,6 @@
 # Module J — Boss challenge (all modules)
 
-[← I — Structs](I-structs-multi-file.md) · [Chapter index](../tasks.md)
+[← I — Structs](I-structs-multi-file.md) · [Chapter index](../tasks.md) · [Next (after you pass): 01 — Low-level mental model →](../../01-low-level-mental-model/tasks.md)
 
 ---
 
@@ -23,6 +23,7 @@ Build a tiny **student roster** that stores people in memory and answers simple 
 ### Required type
 
 ```c
+/* fragment: not a complete program — add #include lines and main() to run it */
 struct Student {
     char name[32];   /* printable letters/digits only for this exercise; no spaces */
     int  id;         /* positive integer */
@@ -57,8 +58,9 @@ ok: added
 ```
 
 **On `add` failures** (choose the **first** matching rule in this order):
+0. the line is not exactly `add`, a name, an id and a score (a field is missing, there is extra text, or a non-number where a number belongs) → `error: bad input`
 1. roster full (`count == 8`) → `error: full`
-2. name longer than 31 characters → `error: bad name`
+2. name longer than 31 characters, or containing anything other than letters (`a`–`z`, `A`–`Z`) and digits → `error: bad name`
 3. `id <= 0` → `error: bad id`
 4. `score` outside `0..100` → `error: bad score`
 5. another student already has the same `id` → `error: duplicate id`
@@ -73,6 +75,7 @@ ok: added
 **On `find <id>`:**
 - Found: same one-line format as `list`
 - Not found: `error: not found`
+- Missing or non-numeric id (for example `find` or `find abc`): `error: bad input`
 
 **On `avg`:**
 ```text
@@ -86,6 +89,10 @@ avg=<value>
 error: unknown command
 ```
 Then **continue** reading (do not exit).
+
+**On an empty line:** print nothing and continue.
+
+**On a line longer than 127 characters:** print `error: line too long`, throw away the rest of that line, and continue.
 
 **On `quit`:** print nothing; exit `0`.
 
@@ -111,12 +118,13 @@ main.c       — read lines / commands, call helpers, loop until quit
 Compile example:
 
 ```text
-gcc main.c roster.c -o roster
+gcc -std=c17 -Wall -Wextra -g main.c roster.c -o roster
 ```
 
 ### Suggested function ideas (signatures are hints, not mandatory)
 
 ```c
+/* fragment: not a complete program — add #include lines and main() to run it */
 int roster_add(struct Student *students, int *count, const char *name, int id, int score);
 void roster_list(const struct Student *students, int count);
 int roster_find(const struct Student *students, int count, int id); /* index or -1 */
@@ -161,7 +169,7 @@ If you have `struct Student s`, use `s.name`. If you have `struct Student *p`, u
 Before inserting, loop `i` from `0` to `count - 1` and compare `students[i].id`.
 
 **Hint 6 — name length**  
-After reading the name into a temporary buffer, check `strlen(name) > 31` (or refuse wider input). Copy with a bounded approach into `students[i].name`, then ensure `'\0'` at the end.
+After reading the name into a temporary buffer, check `strlen(name) > 31` (or refuse wider input). Copy with a bounded approach into `students[i].name`, then ensure `'\0'` at the end. To check characters, loop over the name and test each one with `isalnum((unsigned char)c)` from `<ctype.h>`.
 
 **Hint 7 — `find` returns an index**  
 Returning `-1` for “missing” is a common pattern (Module E return values).
@@ -174,6 +182,14 @@ Declarations in the header, definitions in `roster.c`, `#include "roster.h"` fro
 
 **Hint 10 — debug strategy**  
 Test in this order: `quit` → `list` on empty → one `add` + `list` → bad score → full roster → `find` → `avg` → unknown command.
+
+**Hint 11 — detecting bad input**  
+`sscanf` returns how many fields it filled. Add one extra field at the end to catch leftover text. With `char name[128]` (as big as a whole line, so any name fits for the length check) and `char extra[2]`:
+`sscanf(line, "%*s %127s %d %d %1s", name, &id, &score, extra)` returns `3` for a clean line and `4` when there is extra text. Anything else is a missing or non-numeric field. (`%*s` reads the word `add` and throws it away.)
+After your length check passes, copy with `memcpy(students[i].name, name, strlen(name) + 1)`. Using `snprintf` here also works, but GCC cannot see your length check, so `-Wall` shows a harmless `-Wformat-truncation` warning.
+
+**Hint 12 — lines that are too long**  
+After `fgets`, if the buffer has no `'\n'` and you are not at end of file, the line was too long. Read and discard characters with `getchar()` until you reach `'\n'` or `EOF`, then print `error: line too long`.
 
 ---
 
@@ -215,6 +231,7 @@ quit
 - Long name → `error: bad name`
 - Score 101 → `error: bad score`
 - Fill to 8 students, then next add → `error: full`
+- Second `avg` → `avg=59` ( 475 / 8 )
 - `bogus` → `error: unknown command`
 - `quit` → exit 0
 
@@ -222,10 +239,42 @@ quit
 
 ---
 
+## Automatic check
+
+The folder [`../tests/`](../tests/) holds two input files and the exact output a correct program prints:
+
+| Input | Expected output | Covers |
+|-------|-----------------|--------|
+| `j_input.txt` | `j_expected.txt` | the self-test script above |
+| `j_edge_input.txt` | `j_edge_expected.txt` | bad input, bad names, empty line, too-long line, boundary scores |
+
+Copy the `tests` folder next to your program, then run:
+
+Linux / macOS / WSL:
+
+```bash
+./roster < tests/j_input.txt > out.txt
+diff out.txt tests/j_expected.txt
+```
+
+Windows PowerShell:
+
+```powershell
+cmd /c ".\roster.exe < tests\j_input.txt > out.txt"
+Compare-Object (Get-Content out.txt) (Get-Content tests\j_expected.txt)
+```
+
+**No output means your program matches.** Any lines printed are the differences. Repeat with the `j_edge_` files.
+
+On Windows, do not use `Get-Content tests\j_input.txt | .\roster.exe`: Windows PowerShell 5.1 adds an invisible byte to the start of the input, so your first line is read wrongly.
+
+---
+
 ## Pass criteria (honest self-check)
 
 Mark **pass** only if **all** are true:
 
+- [ ] Both automatic checks print no differences
 - [ ] All five commands work with the formats above
 - [ ] Rejection cases print the correct `error: ...` lines
 - [ ] You never write past 8 students or past `name[32]`

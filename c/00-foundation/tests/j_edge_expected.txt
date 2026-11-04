@@ -1,0 +1,14 @@
+error: bad input
+error: bad input
+error: bad input
+error: bad name
+error: bad input
+error: bad input
+error: bad name
+error: line too long
+error: bad id
+error: bad score
+ok: added
+name=Zed id=5 score=100
+name=Zed id=5 score=100
+avg=100

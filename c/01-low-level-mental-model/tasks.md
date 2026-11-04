@@ -2,7 +2,7 @@
 
 This chapter comes **after** absolute-beginner syntax (chapter 00). You already know variables, loops, functions, arrays, and gentle pointers. Here you build the **machine picture** that later systems chapters assume: bits, bytes, addresses, how C becomes a runnable program, and stack vs heap.
 
-Each subchapter uses **Learn → Try → Exercise**.
+Each subchapter uses **Learn → Try → Exercise**. Tested solutions with design notes: [`solutions/c/01-low-level-mental-model/`](../../solutions/c/01-low-level-mental-model/README.md) — attempt each exercise first.
 
 ## Objectives
 - Count and print values in binary and hex.
@@ -37,12 +37,44 @@ Computers store information as **bits** (0 or 1). Eight bits make one **byte**.
 
 Humans often write byte values in **hexadecimal** (base 16) because each hex digit is exactly 4 bits:
 
-| Decimal | Binary (4 bits) | Hex |
+| Decimal | Binary | Hex |
 |---------|-----------------|-----|
 | 0 | 0000 | 0 |
 | 10 | 1010 | A |
 | 15 | 1111 | F |
 | 255 | 11111111 | FF |
+
+#### Converting by hand
+
+**Binary → decimal.** Each bit position is worth double the one to its right. For one byte:
+
+```text
+position value:  128  64  32  16   8   4   2   1
+bits of 200:       1   1   0   0   1   0   0   0
+                 128 + 64 +            8          = 200
+```
+
+Add up the values where the bit is `1`.
+
+**Decimal → binary.** Go through the position values from the largest: if the value fits into what is left, write `1` and subtract it; otherwise write `0`. For 13: 8 fits (5 left) → `1`, 4 fits (1 left) → `1`, 2 does not fit → `0`, 1 fits (0 left) → `1`. So 13 is `1101`.
+
+**Binary ↔ hex.** Split the bits into groups of 4 from the right, then turn each group into one hex digit (`0`–`9`, then `A`=10 … `F`=15):
+
+```text
+1100 1000   →   C  8   →   0xC8   (= 200)
+```
+
+In C, write hex numbers with a `0x` prefix: `0xC8` and `200` are the same value.
+
+**Drills** — do them on paper, then check with a program:
+1. 13 in binary and hex
+2. 200 in hex
+3. `0x3F` in decimal
+4. binary `1010 0101` in hex and decimal
+5. 64 in binary and hex
+6. `0xFF` in decimal
+
+Answers: 1. `1101`, `0xD` · 2. `0xC8` · 3. `63` · 4. `0xA5`, `165` · 5. `0100 0000`, `0x40` · 6. `255`
 
 In `printf`:
 - `%d` — decimal
@@ -88,6 +120,8 @@ An `int` is not an abstract “number floating in space.” On your machine it o
 - `sizeof(int)` — how many bytes
 - `&x` — address of variable `x`
 - `%p` — print a pointer/address (cast to `void *` for portability): `printf("%p\n", (void *)&x);`
+
+The exact text `%p` prints is up to the C library: Linux and macOS print something like `0x7ffd5e8c1a4c`, while Windows prints 16 hex digits with no `0x`, like `000000BC471FF724`. Both are fine — only the labels in the desired output must match.
 
 A pointer variable stores an address (Pointers on C: the pointer holds *where*).
 
@@ -168,21 +202,21 @@ Your `.c` file is text. Turning it into a runnable program is a pipeline (CS:APP
 In practice, one command often does several steps:
 
 ```text
-gcc main.c util.c -o prog
+gcc -std=c17 -Wall -Wextra -g main.c util.c -o prog
 ```
 
 You can also compile separately, then link:
 
 ```text
-gcc -c util.c -o util.o
-gcc -c main.c -o main.o
+gcc -std=c17 -Wall -Wextra -g -c util.c -o util.o
+gcc -std=c17 -Wall -Wextra -g -c main.c -o main.o
 gcc main.o util.o -o prog
 ```
 
 `-c` means “compile/assemble to an object file; do not link yet.”
 
 ### Try
-Create `add.c` with a function `int add(int a, int b)` and `main.c` that calls it. Compile both with `gcc main.c add.c -o addprog` and run it.
+Create `add.c` with a function `int add(int a, int b)` and `main.c` that calls it. Compile both with `gcc -std=c17 -Wall -Wextra -g main.c add.c -o addprog` and run it.
 
 ### Exercise D1 — Two files, one program
 **Task**: Split into:
@@ -191,7 +225,7 @@ Create `add.c` with a function `int add(int a, int b)` and `main.c` that calls i
 - `main.c` — reads two ints, prints `sum=<value>`
 
 Compile by hand (no Makefile required), for example:
-`gcc main.c mathx.c -o sum` or the separate `-c` then link form.
+`gcc -std=c17 -Wall -Wextra -g main.c mathx.c -o sum` or the separate `-c` then link form.
 
 **Desired output** (for input `2 3`):
 - `sum=5`
@@ -216,11 +250,14 @@ Compile by hand (no Makefile required), for example:
 - **Heap** memory is requested with `malloc` and released with `free`. It lives until you free it (or the program exits). **Ownership rule for this chapter:** if you `malloc`, you `free` in the same clear place.
 
 ```c
+#include <stdio.h>
 #include <stdlib.h>
 
+/* inside main(): */
 int *p = malloc(sizeof(int));
 if (p == NULL) {
-    /* allocation failed — handle it */
+    fprintf(stderr, "error: malloc failed\n");
+    return 1;   /* stop here: never use p when it is NULL */
 }
 *p = 42;
 free(p);
@@ -277,6 +314,8 @@ low addresses
 ```
 
 Exact layout depends on OS and architecture. You will not memorize addresses — you will **observe** that a local, a global, and a heap pointer usually sit in different regions (their `%p` values look “far apart” in characteristic ways).
+
+**Windows note:** on 64-bit Windows the order usually differs from the picture above. Globals and code are often at very high addresses (for example `00007FF7...`), the stack is often the *lowest* (for example `000000BC...`), and the heap sits in between. So F2 often prints `obs=local_addr_le_heap` on Windows — that is expected. Address space layout randomization (ASLR) also changes the exact numbers on every run, on all modern OSes.
 
 ### Try
 Declare a global `int g;`, a local `int L;` in `main`, and a heap `int *h = malloc(sizeof(int));`. Print all three addresses, then `free(h)`.

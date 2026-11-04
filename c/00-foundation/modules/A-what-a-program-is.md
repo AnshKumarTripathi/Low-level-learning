@@ -2,6 +2,8 @@
 
 [← Chapter index](../tasks.md) · [Next: B — Output and input →](B-output-and-input.md)
 
+> New to compilers or the terminal? Do [Setup & getting unstuck](../../../00-setup/README.md) first.
+
 ---
 
 ## Learn
@@ -33,28 +35,6 @@ Low-level security work is mostly about **what your program does with bytes in m
 
 ---
 
-## Case study: exit codes and silent failure
-
-A login helper that always returns `0` even when authentication fails:
-
-```c
-/* BAD — caller thinks login succeeded */
-int check_password(const char *input)
-{
-    if (strcmp(input, "secret") != 0) {
-        printf("wrong password\n");
-        return 0;  /* should be non-zero */
-    }
-    return 0;
-}
-```
-
-A shell script running `if ./check; then grant_access; fi` would **grant access on failure**. Correct pattern: `return 1` (or another non-zero code) on failure, print errors to **stderr** when appropriate.
-
-**Lesson**: `return 0` vs `return 1` is not cosmetic — it is part of your program’s contract with the OS and other programs.
-
----
-
 ## Try
 
 1. Create `hello.c`:
@@ -77,14 +57,36 @@ int main(void)
 
 ---
 
+## Case study: exit codes and silent failure
+
+A login helper that always returns `0` even when authentication fails:
+
+```c
+/* fragment: not a complete program — add #include lines and main() to run it */
+/* BAD — caller thinks login succeeded */
+int check_password(const char *input)
+{
+    if (strcmp(input, "secret") != 0) {
+        printf("wrong password\n");
+        return 0;  /* should be non-zero */
+    }
+    return 0;
+}
+```
+
+A shell script running `if ./check; then grant_access; fi` would **grant access on failure**. Correct pattern: `return 1` (or another non-zero code) on failure, print errors to **stderr** when appropriate.
+
+**Lesson**: `return 0` vs `return 1` is not cosmetic — it is part of your program’s contract with the OS and other programs.
+
+---
+
 ## Exercises
 
-Work **in order**. Each step adds one new idea. **Starter demos** are complete tiny programs — type them, run them, then adapt them for the exercise (do not just copy-paste without understanding).
+Work **in order**. Each exercise starts with a **worked example** that solves a simpler version of the problem. Type it in, run it, and make sure you understand every line. Then solve **Your task** yourself — the worked example is *not* the answer. Solutions are in [`solutions/`](../../../solutions/c/00-foundation/README.md); try first.
 
-### Exercise A1 — Personalized hello *(easy)*
-**Task**: Print a greeting that includes your name. Hard-code the name in the source (no user input yet).
+### Exercise A1 — Personal info card *(easy)*
 
-**Starter demo**:
+**Worked example** — prints one line:
 
 ```c
 #include <stdio.h>
@@ -96,19 +98,20 @@ int main(void)
 }
 ```
 
-Change `Ansh` to your name.
+**Your task**: Print a three-line "info card" about yourself. Hard-code the values (no user input yet). Use one `printf` per line.
 
-**Desired output** (example):
-- `Hello, Ansh`
+**Desired output** (with your own values):
+- `name=Ansh`
+- `city=Delhi`
+- `goal=learn C`
 
 ---
 
-### Exercise A2 — Success vs failure exit code *(medium)*
-**Task**: Use a hard-coded `int` variable `failed` (`0` = success, `1` = failure). If `failed` is `0`, print `ok` and `return 0`. If `failed` is `1`, print `error: something went wrong` and `return 1`.
+### Exercise A2 — Choosing an exit code *(medium)*
 
-This practices **exit codes** without command-line arguments yet.
+This practices **exit codes**. It uses `if`, which Module D explains fully — for now, read `if (x) { ... }` as "run this block only when `x` is not zero".
 
-**Starter demo**:
+**Worked example** — one variable decides success or failure:
 
 ```c
 #include <stdio.h>
@@ -127,24 +130,30 @@ int main(void)
 }
 ```
 
-After it works, check the exit code:
+**Your task**: Use **two** hard-coded variables, `disk_full` and `net_down` (each `0` or `1`). Check them in this order:
+- `disk_full` is `1` → print `error: disk full` and exit `3`
+- otherwise `net_down` is `1` → print `error: network down` and exit `4`
+- otherwise → print `ok` and exit `0`
+
+Try all four combinations of values and check the exit code each time:
 - Linux/macOS: `echo $?`
 - Windows PowerShell: `echo $LASTEXITCODE`
 
 **Desired output**:
-- `failed = 0` → prints `ok`, exit `0`
-- `failed = 1` → prints `error: something went wrong`, exit `1`
+- `disk_full = 0`, `net_down = 0` → `ok`, exit `0`
+- `disk_full = 1`, `net_down = 0` → `error: disk full`, exit `3`
+- `disk_full = 0`, `net_down = 1` → `error: network down`, exit `4`
+- `disk_full = 1`, `net_down = 1` → `error: disk full`, exit `3`
 
 ---
 
-### Exercise A3 — Command-line flag and stderr *(stretch — uses new ideas)*
-**Task**: Read an optional command-line argument. If the user runs the program with `--fail` as the first argument, print `error: forced failure` to **stderr** and exit with code `2`. Otherwise print `ok` to stdout and exit `0`.
+### Exercise A3 — Command-line options and stderr *(stretch — uses new ideas)*
 
 New pieces here:
 - `main(int argc, char *argv[])` — `argc` is how many arguments; `argv[1]` is the first string after the program name.
 - `fprintf(stderr, ...)` — print to stderr (like `printf`, but for errors).
 
-**Starter demo** (study, then rewrite in your own file):
+**Worked example** — handles one option, `--fail`:
 
 ```c
 #include <stdio.h>
@@ -162,11 +171,19 @@ int main(int argc, char *argv[])
 }
 ```
 
-`strcmp(a, b)` returns `0` when two strings are equal. You will see it again in Module D.
+`strcmp(a, b)` returns `0` when two strings are equal. You will see it again in Module D. `&&` means "and" (Module D).
+
+**Your task**: Support three cases:
+- no arguments → print `ok` to stdout, exit `0`
+- `--help` → print `usage: prog [--help | --fail]` to stdout, exit `0`
+- `--fail` → print `error: forced failure` to **stderr**, exit `2`
+- any other first argument → print `error: unknown option` to **stderr**, exit `2`
 
 **Desired output**:
-- `./prog` → prints `ok`, exit `0`
-- `./prog --fail` → prints `error: forced failure` to stderr, exit `2`
+- `./prog` → `ok`, exit `0`
+- `./prog --help` → `usage: prog [--help | --fail]`, exit `0`
+- `./prog --fail` → `error: forced failure` on stderr, exit `2`
+- `./prog --oops` → `error: unknown option` on stderr, exit `2`
 
 **References (concept-only)**:
 - King — Ch. 2 / Head First C — getting started

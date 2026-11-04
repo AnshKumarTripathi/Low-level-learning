@@ -1,0 +1,19 @@
+ok: added
+ok: added
+error: duplicate id
+name=Ada id=1 score=90
+name=Bob id=2 score=80
+name=Bob id=2 score=80
+error: not found
+avg=85
+error: bad name
+error: bad score
+ok: added
+ok: added
+ok: added
+ok: added
+ok: added
+ok: added
+error: full
+avg=59
+error: unknown command
