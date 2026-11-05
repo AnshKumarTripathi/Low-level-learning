@@ -2,7 +2,7 @@
 
 [Roadmap](../ROADMAP.md) · [Glossary](../GLOSSARY.md) · [Start: G1 — Canvas →](G1-canvas.md)
 
-> Prerequisites: C chapters 00–05 (structs, `malloc`/`free`, text files from C 03 §8, bytes from C 05) and C 01 Subchapter G (PPM images). Time: about 40–60 hours for G1–G6.
+> Prerequisites: C chapters 00–05 (structs, `malloc`/`free`, text files from C 03 §8, bytes from C 05) and C 01 Subchapter G (PPM images). Time: about 40–60 hours for G1–G7.
 
 Every game, film and 3D app ends the same way: a grid of pixels in memory, three bytes each. In this track you write the code that fills that grid yourself — no graphics library, no GPU — so you understand what the GPU later does for you.
 
@@ -16,6 +16,7 @@ You will build, in order:
 | G4 | [3D math and wireframes](G4-3d-wireframe.md) | vectors, matrices, perspective, a spinning cube | ![wireframe cube](images/g4-cube.png) |
 | G5 | [Solid 3D: depth, light, models](G5-solid-3d.md) | depth buffer, back-face culling, lighting, an OBJ loader | ![shaded torus](images/g5-torus.png) |
 | G6 | [Ray tracing](G6-raytracer.md) | ray–sphere hits, shadows, reflections, anti-aliasing | ![ray traced spheres](images/g6-raytracer.png) |
+| G7 | [Real-time window](G7-realtime-window.md) | SDL2 window, game loop, keyboard, delta time | ![live window](images/g7-window.png) |
 
 Every picture above was made by the reference solutions in [`solutions/c/graphics/`](../solutions/c/graphics/). Attempt each exercise first.
 
@@ -28,7 +29,6 @@ Every picture above was made by the reference solutions in [`solutions/c/graphic
 
 ## Coming next (planned)
 
-- **G7 — Real-time window**: show frames live with SDL2 and handle the keyboard.
 - **G8 — Game engine milestone**: game loop, input, scenes, on top of your renderer.
 - **G9 — Render server**: an HTTP service that renders a scene on request, using threads (C 10) and sockets (C 09).
 - **GPU track (C++)**: OpenGL, then Vulkan, after the C++ bridge.

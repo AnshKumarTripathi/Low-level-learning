@@ -1,6 +1,6 @@
 # G6 — Ray Tracing
 
-[← G5 — Solid 3D](G5-solid-3d.md) · [Graphics track](README.md)
+[← G5 — Solid 3D](G5-solid-3d.md) · [Graphics track](README.md) · [Next: G7 — Real-time window →](G7-realtime-window.md)
 
 > Time: about 8–12 hours · Prerequisites: G4 (vectors), C 00-E (recursion) · You will build: a ray tracer with spheres, a checkered floor, shadows, shiny highlights, mirror reflections and anti-aliasing.
 
