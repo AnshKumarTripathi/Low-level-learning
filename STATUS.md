@@ -56,7 +56,7 @@ Also:
 - Chapter 00 Modules B–I each end with a **mini-project** (Mad Libs, pizza planner, guessing game, ASCII art, bar chart, Caesar cipher, coin shop, text adventure), with tested solutions.
 - Chapter 01 Subchapter G: PPM images; milestone **M0.5** Mandelbrot poster.
 - New lessons: recursion (Module E), `make` and unit testing (C 02), text files (C 03), sorting and searching (C 06).
-- **Graphics track** `graphics/` G1–G7 (canvas, lines, triangles, 3D wireframe, shaded OBJ models, ray tracer, real-time SDL2 window) with reference solutions and rendered pictures. G8–G9 (engine, render server) and the GPU track are planned, not written.
+- **Graphics track** `graphics/` G1–G7 (canvas, lines, triangles, 3D wireframe, shaded OBJ models, ray tracer, real-time SDL2 window) with reference solutions and rendered pictures. G8 (engine milestone spec, no solution by design). G9 (render server) and the GPU track are planned, not written.
 
 ### Milestones
 - [milestones/README.md](milestones/README.md) — M1 `strlib`, M2 `hashmap`, M3 `minish`, M4 `kvserver`, M5 `mymalloc`, and C++ M1 (modern C++ rewrite), each with a spec, a test plan and a grading table. Linked from the chapters where they fit.

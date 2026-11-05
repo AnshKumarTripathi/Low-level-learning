@@ -1,6 +1,6 @@
 # G7 — Real-time Window
 
-[← G6 — Ray tracing](G6-raytracer.md) · [Graphics track](README.md)
+[← G6 — Ray tracing](G6-raytracer.md) · [Graphics track](README.md) · [Next: G8 — Engine milestone →](G8-engine-milestone.md)
 
 > Time: about 6–8 hours · Prerequisites: G4 (or any chapter with a framebuffer), C 02 (linking libraries) · You will build: a live window that shows your own framebuffer at 60 frames per second, controlled with the keyboard.
 

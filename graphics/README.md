@@ -17,6 +17,7 @@ You will build, in order:
 | G5 | [Solid 3D: depth, light, models](G5-solid-3d.md) | depth buffer, back-face culling, lighting, an OBJ loader | ![shaded torus](images/g5-torus.png) |
 | G6 | [Ray tracing](G6-raytracer.md) | ray–sphere hits, shadows, reflections, anti-aliasing | ![ray traced spheres](images/g6-raytracer.png) |
 | G7 | [Real-time window](G7-realtime-window.md) | SDL2 window, game loop, keyboard, delta time | ![live window](images/g7-window.png) |
+| G8 | [Milestone: tiny game engine](G8-engine-milestone.md) | engine modules, fixed time step, entities, bitmap font, your own game | — |
 
 Every picture above was made by the reference solutions in [`solutions/c/graphics/`](../solutions/c/graphics/). Attempt each exercise first.
 
@@ -29,7 +30,6 @@ Every picture above was made by the reference solutions in [`solutions/c/graphic
 
 ## Coming next (planned)
 
-- **G8 — Game engine milestone**: game loop, input, scenes, on top of your renderer.
 - **G9 — Render server**: an HTTP service that renders a scene on request, using threads (C 10) and sockets (C 09).
 - **GPU track (C++)**: OpenGL, then Vulkan, after the C++ bridge.
 
