@@ -1,6 +1,6 @@
 # G8 — Milestone: A Tiny Game Engine
 
-[← G7 — Real-time window](G7-realtime-window.md) · [Graphics track](README.md) · [All milestones](../milestones/README.md)
+[← G7 — Real-time window](G7-realtime-window.md) · [Graphics track](README.md) · [All milestones](../milestones/README.md) · [Next: G9 — Render server →](G9-render-server.md)
 
 > Time: about 25–40 hours · Prerequisites: G1–G7, C 03 (function pointers), C 04 (ownership), C 06 (data structures) · You will build: a small engine split into modules, and an original game made with it.
 

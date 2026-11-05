@@ -104,7 +104,7 @@ You will design message formats and add integrity checks (checksums/hashes), foc
 You will pick one larger project that ties together parsing + I/O + debugging + performance discipline.
 
 ### Graphics track (C) — `graphics/`
-After C 05, you can start the **[graphics track](graphics/README.md)** alongside the C chapters: build a software renderer from scratch — a pixel canvas, lines, triangles, 3D math and a spinning wireframe cube, a shaded OBJ model with a depth buffer, a ray tracer with shadows and reflections, and a live SDL2 window with a game loop (G1–G7). Then milestone G8, a tiny game engine with your own game. Planned next: a render server, and a GPU track in C++.
+After C 05, you can start the **[graphics track](graphics/README.md)** alongside the C chapters: build a software renderer from scratch — a pixel canvas, lines, triangles, 3D math and a spinning wireframe cube, a shaded OBJ model with a depth buffer, a ray tracer with shadows and reflections, and a live SDL2 window with a game loop (G1–G7). Then milestone G8, a tiny game engine with your own game, and G9, a multi-threaded render server over HTTP. Planned next: a render server, and a GPU track in C++.
 
 ## Book guides (C early path, concept-only)
 
