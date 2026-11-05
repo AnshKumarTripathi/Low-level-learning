@@ -161,11 +161,17 @@ def check_foundation_outputs(cc, work, sanitize):
         ("H-mini", "1 15\n1 10\n2 7\n1 10\n0\n", (), "coins=5\nnot enough coins (have 5)\ncoins=12\ncoins=2\nfinal coins=2\n", 0),
         ("I-mini", "w\nn\ns\ne\nn\n", (), "You are in the Hall.\nYou can't go that way.\nYou are in the Library.\n"
             "You are in the Hall.\nYou are in the Kitchen.\nYou are in the Vault.\nYou found the treasure in 4 moves!\n", 0),
+        # Chapter 01 Subchapter G (PPM images)
+        ("../01-low-level-mental-model/G1", "3 1\n", (), "P3\n3 1\n255\n255 153 51\n255 255 255\n19 136 8\n", 0),
+        ("../01-low-level-mental-model/G1", "2 1\n", (), "", 1),
+        ("../01-low-level-mental-model/G2", "2 1\n#FF8800 #000000\n", (),
+            "P3\n2 2\n255\n255 136 0\n0 0 0\n0 0 0\n255 136 0\n", 0),
+        ("../01-low-level-mental-model/G2", "2 1\nFF8800\n", (), "", 1),
     ]
     built = {}
     for name, stdin, args, expected_out, expected_rc in cases:
         if name not in built:
-            exe = work / f"f00_{name}{EXE}"
+            exe = work / f"f00_{name.replace('/', '_').replace('.', '')}{EXE}"
             rc, err = compile_files(cc, [sol / f"{name}.c"], exe, True, sanitize)
             if rc != 0:
                 fail(f"solution {name} does not compile\n{err[:300]}")
@@ -178,7 +184,7 @@ def check_foundation_outputs(cc, work, sanitize):
     for f in ("j_input.txt", "j_expected.txt", "j_edge_input.txt", "j_edge_expected.txt"):
         if not (ROOT / "c" / "00-foundation" / "tests" / f).exists():
             fail(f"missing Module J test file {f}")
-    print(f"chapter 00 output checks: {len(cases)}")
+    print(f"chapter 00-01 output checks: {len(cases)}")
 
 
 def main():

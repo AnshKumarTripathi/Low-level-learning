@@ -21,3 +21,6 @@ Addresses printed by B1, F1 and F2 are different on every machine and every run.
 | E1 | [E1.c](E1.c) | `sizeof *p` instead of `sizeof(int)` stays correct if the type changes. The error path frees the block too: every exit after a successful `malloc` must `free`. |
 | E2 | [E2.c](E2.c) | Same value, two storage places: `local` disappears when `main` returns, the heap block when `free` is called. |
 | F1–F2 | [F1.c](F1.c), [F2.c](F2.c) | Comparing unrelated pointers with `<` or `>` is undefined in C, so F2 converts both to `uintptr_t` first. On 64-bit Windows the usual result is `obs=local_addr_le_heap`. |
+| G1 | [G1.c](G1.c) | Input is checked before the header is printed, so a bad run never leaves half an image. The stripe test uses `x < w / 3` and `x < 2 * w / 3`; integer division puts any extra columns in the last stripe. |
+| G2 | [G2.c](G2.c) | `%2x` reads exactly two hex digits, so `#FF8800` splits into three bytes with no extra code. The colors are `unsigned int` because that is what `%x` writes into. |
+| G3 | [G3.c](G3.c) | The image is `static` because 12 KB is large for a stack frame. Diagnostics go to stderr, so `> circle.ppm` still gets a clean image. The two offsets prove that `[y][x][c]` is plain address arithmetic. G3 uses `%zu`: on MinGW add `-D__USE_MINGW_ANSI_STDIO=1`. |
