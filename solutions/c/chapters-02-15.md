@@ -20,6 +20,7 @@ On Windows with MinGW GCC, add `-D__USE_MINGW_ANSI_STDIO=1` when using `-Werror`
 | 2 | [ex2-warnings/](02-tooling-build/ex2-warnings/README.md) | see README | A strict command plus a file with one of each mistake; the README shows GCC 13's real errors. |
 | 3 | [ex3-debugger-drill.c](02-tooling-build/ex3-debugger-drill.c) | `-g -O0` | `main → load_settings → read_value` crashes on a NULL returned for an unknown setting; `bt` shows all three frames. |
 | 4 | [ex4-memory-drill.c](02-tooling-build/ex4-memory-drill.c) **lab** | see header comment | `--leak`, `--oob`, `--uaf`, `--fixed`. Without tools, `--oob` and `--uaf` print plausible values and exit 0 — which is the point. |
+| 5 | [ex5-make/](02-tooling-build/ex5-make/) | `make`, `make test` | One pattern rule builds every `.o`; each depends on `mathx.h`, so a header change rebuilds both. The test program returns `1` on any failure, so `make test` fails too. `gcd` makes both inputs non-negative first, which also covers `gcd(0, 0)`. Tested with `mingw32-make` 4.x. |
 
 ## 03 — C language II
 
@@ -28,6 +29,7 @@ On Windows with MinGW GCC, add `-D__USE_MINGW_ANSI_STDIO=1` when using `-Werror`
 | 1 | [ex1-shapes.c](03-c-language-ii/ex1-shapes.c) | `-lm` on Linux | Tagged union; values parsed with `strtod` in a loop, so junk, missing, non-finite and non-positive values are rejected; blank lines skipped. |
 | 2 | [ex2-inventory.c](03-c-language-ii/ex2-inventory.c) | — | A table of `{option, comparator}` picks the `qsort` order; comparators use `(a > b) - (a < b)` and break ties by name. |
 | 3 + 4 | [ex3-ex4-dispatcher/](03-c-language-ii/ex3-ex4-dispatcher/) | build `main.c commands.c` | All command functions and the table are `static`; `nm commands.o` shows only `find_command` as global (`T`). Adding `max` changed only the table. |
+| 5 | [ex5-scores.c](03-c-language-ii/ex5-scores.c) | — | `"a"` mode appends without reading the file first. `fclose` is checked because buffered data is written there. Lines are parsed into a 64-byte temporary and length-checked before the copy, so a long name in the file cannot overflow `name[16]`. |
 
 ## 04 — Memory, pointers, lifetimes
 
@@ -55,6 +57,7 @@ On Windows with MinGW GCC, add `-D__USE_MINGW_ANSI_STDIO=1` when using `-Werror`
 | 2 | [ex2-hashmap.c](06-data-structures/ex2-hashmap.c) | — | Open addressing, FNV-1a, tombstones, growth before load 0.7 (tombstones included). Matches Python on 300,000 words; `--stress` passes 100,000 random operations. |
 | 3 | [ex3-topk.c](06-data-structures/ex3-topk.c) | — | A min-heap of at most `k` values: O(k) memory. Matches a sort on 200,000 numbers. |
 | 4 | [ex4-bst.c](06-data-structures/ex4-bst.c) | — | Insert, search, height and free are iterative, so the 10,000-deep sorted tree cannot overflow the stack. Measured: random height 33, sorted 10,000. |
+| 5 | [ex5-sort-race.c](06-data-structures/ex5-sort-race.c) | build with `-O2` | Every result is checked against `qsort` with `memcmp`. Merge sort allocates its scratch buffer once, not per call. `mid = lo + (hi - lo) / 2` avoids overflow. Measured (GCC 13, `-O2`): at 10,000, insertion 0.020 s vs merge 0.002 s. On Windows `RAND_MAX` is 32767, so values repeat — harmless for sorting. |
 
 ## 07 — Binary files and parsing
 

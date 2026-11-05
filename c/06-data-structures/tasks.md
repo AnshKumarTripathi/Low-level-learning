@@ -12,6 +12,7 @@ By the end of this chapter you will be able to:
 - Implement a hash map with a good string hash and a growth policy.
 - Implement a binary heap as an array and use it as a priority queue.
 - Implement a binary search tree and explain when it becomes slow.
+- Implement insertion sort, merge sort and binary search, and measure O(n²) against O(n log n).
 - Test data structures with `assert` and invariant checks.
 
 ## Why it matters
@@ -217,6 +218,64 @@ Each node has a left subtree with smaller keys and a right subtree with larger k
 - Compare against a simple reference: run the same random operations on your hash map and on a plain array searched linearly; the answers must agree.
 - Run tests under sanitizers (ASan on Linux/WSL) — data-structure code is where use-after-free and leaks hide.
 
+### 7. Sorting and searching
+
+`qsort` sorts for you, but knowing **how** sorting works explains the O(n²) vs O(n log n) row of the Big-O table.
+
+**Insertion sort** — the way you sort playing cards in your hand. Take the next card and slide it left past every bigger card:
+
+```text
+[5 2 4 1]  take 2: slide past 5      → [2 5 4 1]
+[2 5 4 1]  take 4: slide past 5      → [2 4 5 1]
+[2 4 5 1]  take 1: slide past 5,4,2  → [1 2 4 5]
+```
+
+Each card may slide past all the cards before it, so the total work grows like n²: O(n²). It is fast on small or almost-sorted arrays, and real libraries use it for small pieces of bigger sorts.
+
+**Merge sort** — recursion (C 00 Module E) at work. Split the array in half, sort each half (by calling yourself), then **merge** the two sorted halves by repeatedly taking the smaller front element:
+
+```text
+[5 2 4 1 3 6]
+split   → [5 2 4]         [1 3 6]
+sort    → [2 4 5]         [1 3 6]
+merge   → 1 2 3 4 5 6     (compare fronts: 2 vs 1 → 1; 2 vs 3 → 2; 4 vs 3 → 3; …)
+```
+
+There are about log₂ n levels of splitting, and each level does n steps of merging: O(n log n). Merging needs a scratch buffer of n elements — a classic trade of memory for speed.
+
+**Binary search** — on a **sorted** array, look at the middle; the key is either there, or in the left half, or in the right half. Each step halves the range, exactly like the guessing game in C 00 Module D: O(log n), so 20 steps find one value in a million.
+
+```c
+#include <stdio.h>
+
+/* Returns the index of key in sorted a[0..n), or -1. */
+long binary_search(const int *a, size_t n, int key)
+{
+    size_t lo = 0, hi = n;               /* the key can only be in a[lo..hi) */
+    while (lo < hi) {
+        size_t mid = lo + (hi - lo) / 2; /* not (lo + hi) / 2: that can overflow */
+        if (a[mid] < key) {
+            lo = mid + 1;
+        } else if (a[mid] > key) {
+            hi = mid;
+        } else {
+            return (long)mid;
+        }
+    }
+    return -1;
+}
+
+int main(void)
+{
+    int a[] = {2, 3, 5, 7, 11, 13, 17};
+    size_t n = sizeof a / sizeof a[0];
+    printf("%ld %ld %ld\n", binary_search(a, n, 11), binary_search(a, n, 2), binary_search(a, n, 4));
+    return 0;
+}
+```
+
+Output: `4 0 -1`. Binary search is famous for off-by-one bugs: keep one rule (here, "the key is in `a[lo..hi)`, `hi` excluded") and make every line respect it. The standard library has it too: `bsearch`, which takes the same comparator as `qsort`.
+
 ---
 
 ## Exercises
@@ -274,6 +333,33 @@ Implement a binary search tree of `int` keys with insert, contains, in-order pri
 
 **Milestone:** after this chapter, build [M2 — `hashmap`](../../milestones/README.md#m2--hashmap-a-reusable-hash-map).
 
+## Exercise 5 — Sort race
+### Task
+Implement `insertion_sort` and `merge_sort` for `int` arrays (merge sort allocates one scratch buffer and frees it), plus `binary_search` from Learn §7. Then race them:
+- For n = 1,000, 10,000 and 100,000, fill an array with random values (`srand(42)` so runs repeat).
+- Sort a copy with each algorithm and with `qsort`. Check that your results match `qsort`'s byte for byte (`memcmp`).
+- Time each sort with `clock()`. Skip insertion sort at 100,000 and print `skipped`.
+- Search every original value in the sorted array with `binary_search`; all must be found. Search one value that is not there; it must return `-1`.
+
+### Desired output
+One block per size, for example:
+
+```text
+n=10000
+  insertion 0.0200 s ok
+  merge     0.0020 s ok
+  qsort     0.0030 s
+  search    10000/10000 found, missing key -> -1
+```
+
+Your times will differ. Build with `-O2` for meaningful numbers.
+
+### Hints
+1. Insertion sort: use `size_t j` and test `j > 0` **before** reading `a[j - 1]`, so `j` never goes below zero.
+2. Merge sort: write a helper `merge_sort_rec(a, tmp, lo, hi)` that sorts `a[lo..hi)`; the base case is fewer than 2 elements.
+3. Predict before you run: if n grows 10×, an O(n²) sort gets about 100× slower and an O(n log n) one a bit over 10×. Do your numbers agree?
+4. Stretch: sort an array that is **already sorted**. Which algorithm wins now, and why? (Compare Exercise 4's sorted-input trap.)
+
 ## Checkpoint quiz
 
 1. What is the Big-O cost of finding a value in an unsorted linked list? In a hash map, on average?
@@ -286,6 +372,8 @@ Implement a binary search tree of `int` keys with insert, contains, in-order pri
 8. Why is a BST fed sorted keys slow?
 9. Why should `assert` not be used to check user input?
 10. Why can a dynamic array beat a linked list even for inserts in the middle?
+11. Why is insertion sort O(n²) but merge sort O(n log n)?
+12. What must be true of an array before binary search works on it?
 
 ## Recap
 
@@ -293,6 +381,7 @@ Implement a binary search tree of `int` keys with insert, contains, in-order pri
 - Pointer-to-pointer walks make list insert/remove uniform.
 - Hash maps: good hash, collision strategy, growth by load factor, tombstones for open addressing.
 - Heaps give a priority queue in a plain array; BSTs need balancing to stay fast.
+- Insertion sort is O(n²) but good for small inputs; merge sort is O(n log n) with an n-element buffer; binary search needs sorted data and is O(log n).
 - Test with `assert`, invariant checks, reference comparisons and sanitizers.
 
 ## Spaced review
@@ -303,7 +392,7 @@ Implement a binary search tree of `int` keys with insert, contains, in-order pri
 
 ## Answers
 
-Quiz: 1. O(n); O(1). 2. `*link` is the head pointer itself on the first step and a node's `next` field later, so the same assignment works for both. 3. After `free(n)`, reading `n->next` is a use-after-free. 4. Two keys landing in the same bucket; chaining or open addressing (probing). 5. `count / capacity`; collisions and probe lengths grow quickly as it approaches 1. 6. Removing an entry outright would break the probe chain for keys inserted after it. 7. `2i + 1` and `2i + 2`. 8. Every key goes to the same side, so the tree degenerates into a list of height `n`. 9. It disappears in release builds (`NDEBUG`), and it aborts instead of reporting a helpful error. 10. Shifting contiguous memory is very fast and cache-friendly, while walking a list to the insertion point misses the cache at nearly every node.
+Quiz: 1. O(n); O(1). 2. `*link` is the head pointer itself on the first step and a node's `next` field later, so the same assignment works for both. 3. After `free(n)`, reading `n->next` is a use-after-free. 4. Two keys landing in the same bucket; chaining or open addressing (probing). 5. `count / capacity`; collisions and probe lengths grow quickly as it approaches 1. 6. Removing an entry outright would break the probe chain for keys inserted after it. 7. `2i + 1` and `2i + 2`. 8. Every key goes to the same side, so the tree degenerates into a list of height `n`. 9. It disappears in release builds (`NDEBUG`), and it aborts instead of reporting a helpful error. 10. Shifting contiguous memory is very fast and cache-friendly, while walking a list to the insertion point misses the cache at nearly every node. 11. Each insertion may shift every earlier element (n × n); merge sort has about log n levels of splitting, each merging n elements. 12. It must be sorted (by the same order the search compares with).
 
 Spaced review: 1. If it fails it returns `NULL` and the old block must still be freed. 2. Negative, zero or positive for less, equal, greater. 3. `x % capacity`.
 

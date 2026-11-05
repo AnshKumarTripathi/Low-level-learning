@@ -308,6 +308,63 @@ int main(void)
 
 Output: `"42" -> 42`, `"-7" -> -7`, `"12abc" -> error`, `"" -> error`, `"99999999999" -> error`, `"0" -> 0`.
 
+### 8. Text files: `fopen`, `fgets`, `fprintf`, `fclose`
+
+So far every program forgot everything when it ended. A **file** keeps data between runs. Chapter 07 reads files as raw bytes; here you read and write **text** — the same `printf`/`fgets` you know, pointed at a file instead of the terminal.
+
+```c
+#include <stdio.h>
+
+int main(void)
+{
+    FILE *out = fopen("notes.txt", "w");      /* "w": create or empty the file */
+    if (out == NULL) {
+        perror("notes.txt");                  /* prints the reason, e.g. "Permission denied" */
+        return 1;
+    }
+    for (int i = 1; i <= 3; i++) {
+        fprintf(out, "note %d\n", i);         /* like printf, but into the file */
+    }
+    if (fclose(out) != 0) {                   /* buffered data is written now: check it */
+        perror("notes.txt");
+        return 1;
+    }
+
+    FILE *in = fopen("notes.txt", "r");       /* "r": read; fails if the file is missing */
+    if (in == NULL) {
+        perror("notes.txt");
+        return 1;
+    }
+    char line[64];
+    int count = 0;
+    while (fgets(line, sizeof line, in) != NULL) {   /* NULL at end of file or on error */
+        count++;
+        printf("read: %s", line);             /* the line still ends with '\n' */
+    }
+    if (ferror(in)) {
+        perror("notes.txt");
+    }
+    fclose(in);
+    printf("lines=%d\n", count);
+    return 0;
+}
+```
+
+Output: `read: note 1`, `read: note 2`, `read: note 3`, `lines=3`.
+
+| Mode | Opens for | If the file exists | If it does not |
+|------|-----------|--------------------|----------------|
+| `"r"` | reading | reads from the start | `fopen` returns `NULL` |
+| `"w"` | writing | **erases** it first | creates it |
+| `"a"` | appending | writes at the end | creates it |
+
+Rules that prevent most file bugs:
+- **Always check `fopen`** for `NULL`. Missing files, wrong folders and permissions are normal, not exceptional.
+- **Every successful `fopen` needs exactly one `fclose`** — on every path, including error paths. The number of open files is limited, and unwritten data is lost if the program never closes the file.
+- `fprintf` collects output in a memory buffer; the real write may happen only at `fclose`. That is why the `fclose` result matters for files you write.
+- Parse each line after reading it (`sscanf`, or `strtol` from §7). One bad line should produce a warning with its **line number**, not garbage or a crash. A file is input, so treat it as hostile, just like the keyboard.
+- `stdin`, `stdout` and `stderr` are `FILE *` too: `fprintf(stderr, ...)` and `fgets(line, size, stdin)` use the same functions.
+
 ---
 
 ## Exercises
@@ -369,6 +426,39 @@ Turn Exercise 3 into three files: `commands.h` (the table type and one lookup fu
 1. Expose `const CommandEntry *find_command(const char *name);` — nothing else.
 2. In `nm` output, `T` means a global function, `t` a file-local (`static`) one.
 
+## Exercise 5 — High-score table
+### Task
+Give a game a memory. Write `scores`, a command-line tool that keeps scores in a text file, one `name points` pair per line:
+- `scores FILE add NAME POINTS` appends one line and prints `saved NAME POINTS`. `NAME` is 1–15 characters with no spaces; `POINTS` is parsed with `parse_int` from §7. Bad arguments → error on stderr, exit `1`.
+- `scores FILE top` prints the best 5 as `<rank>. <name padded to 15> <points width 6>`, highest first; equal points are sorted by name. A missing or empty file prints `no scores yet` and exits `0`.
+- Bad lines in the file are skipped with `warning: FILE:<line>: skipping bad line` on stderr. Read at most 100 entries.
+
+### Desired output
+```text
+$ scores s.txt top
+no scores yet
+$ scores s.txt add ansh 120
+saved ansh 120
+$ scores s.txt add bo 300
+saved bo 300
+$ scores s.txt add cy 120
+saved cy 120
+$ scores s.txt top
+1. bo                 300
+2. ansh               120
+3. cy                 120
+```
+
+### Edge cases
+- Add a line `garbage` to the file by hand: `top` still works and prints one warning with the right line number.
+- A name of 16 characters, a name with a space (`"a b"`), and points `12x` are all rejected and change nothing.
+
+### Hints
+1. Store entries in an array of `typedef struct { char name[16]; int points; } Score;`.
+2. Read a line with `fgets`, then `sscanf(line, "%63s %d", name, &points) == 2` into a larger temporary `name[64]`, and check its length before copying.
+3. Sort with `qsort` and a comparator (§5). Compare with `(a < b) - (a > b)` for descending order, not with subtraction (quiz question 9).
+4. Then hook it into a game: make Module D's guessing game save `tries` as the score.
+
 ## Checkpoint quiz
 
 1. What is the difference between `const char *p` and `char *const p`?
@@ -381,6 +471,8 @@ Turn Exercise 3 into three files: `commands.h` (the table type and one lookup fu
 8. What should a `qsort` comparator return?
 9. Why is `return a - b;` a risky comparator?
 10. How does `parse_int` detect `"12abc"`?
+11. What happens to an existing file opened with `"w"`? With `"a"`?
+12. Why check the result of `fclose` on a file you wrote?
 
 ## Recap
 
@@ -390,6 +482,7 @@ Turn Exercise 3 into three files: `commands.h` (the table type and one lookup fu
 - Macros are text substitution: parenthesise, avoid side effects, prefer `static inline` functions.
 - Function pointers enable callbacks and dispatch tables.
 - `strtol` + `end` + `errno` parse numbers safely; never `atoi`.
+- Text files: check `fopen`, one `fclose` per open, read with `fgets` and parse each line; a file is untrusted input.
 
 ## Spaced review
 
@@ -399,7 +492,7 @@ Turn Exercise 3 into three files: `commands.h` (the table type and one lookup fu
 
 ## Answers
 
-Quiz: 1. The first points to read-only chars (pointer can move); the second is a fixed pointer to modifiable chars. 2. A union plus an enum saying which member is valid; without the tag, code cannot know which member to read. 3. It is visible only inside that `.c` file (internal linkage). 4. In a header; it is defined (without `extern`) in exactly one `.c` file. 5. `1 + 2 * 1 + 2`, which is 5. 6. The argument appears twice in the expansion, so `i++` can run twice. 7. The source after preprocessing: includes pasted in, macros expanded. 8. A negative, zero or positive `int` for less, equal, greater. 9. The subtraction can overflow for large values of opposite sign. 10. `end` does not point at the string's `'\0'` after parsing.
+Quiz: 1. The first points to read-only chars (pointer can move); the second is a fixed pointer to modifiable chars. 2. A union plus an enum saying which member is valid; without the tag, code cannot know which member to read. 3. It is visible only inside that `.c` file (internal linkage). 4. In a header; it is defined (without `extern`) in exactly one `.c` file. 5. `1 + 2 * 1 + 2`, which is 5. 6. The argument appears twice in the expansion, so `i++` can run twice. 7. The source after preprocessing: includes pasted in, macros expanded. 8. A negative, zero or positive `int` for less, equal, greater. 9. The subtraction can overflow for large values of opposite sign. 10. `end` does not point at the string's `'\0'` after parsing. 11. `"w"` erases it; `"a"` keeps it and writes at the end. 12. Output is buffered, so the real write (and its error, such as a full disk) may happen only at `fclose`.
 
 Spaced review: 1. A header's contents being included twice in one file. 2. `-Werror`. 3. Accesses a struct member through a pointer: `p->x` is `(*p).x`.
 

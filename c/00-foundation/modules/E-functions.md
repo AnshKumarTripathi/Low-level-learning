@@ -66,6 +66,61 @@ int twice(int n)    /* definition: the actual code */
 
 Delete the prototype line and compile with `-Wall`: GCC reports `implicit declaration of function 'twice'`. Header files (Module I) are mostly lists of prototypes like this one.
 
+### Functions that call themselves (recursion)
+
+A function may call **itself**. This is called **recursion**. It works because every call gets its **own** stack frame with its own copies of the parameters.
+
+Every recursive function needs two parts:
+1. a **base case** that answers directly, without calling itself;
+2. a **recursive case** that calls itself on a **smaller** problem, so it moves toward the base case.
+
+```c
+#include <stdio.h>
+
+void countdown(int n)
+{
+    if (n == 0) {                /* base case */
+        printf("liftoff!\n");
+        return;
+    }
+    printf("%d\n", n);
+    countdown(n - 1);            /* smaller problem */
+}
+
+int factorial(int n)
+{
+    if (n <= 1) {                /* base case */
+        return 1;
+    }
+    return n * factorial(n - 1); /* n! = n * (n-1)! */
+}
+
+int main(void)
+{
+    countdown(3);
+    printf("5! = %d\n", factorial(5));
+    return 0;
+}
+```
+
+Output: `3`, `2`, `1`, `liftoff!`, then `5! = 120`.
+
+While `factorial(3)` runs, the stack holds one frame per call:
+
+```text
+ ┌────────────────────┐
+ │ main               │
+ ├────────────────────┤
+ │ factorial  n = 3   │  waits for factorial(2), then returns 3 * 2
+ ├────────────────────┤
+ │ factorial  n = 2   │  waits for factorial(1), then returns 2 * 1
+ ├────────────────────┤
+ │ factorial  n = 1   │  base case: returns 1
+ └────────────────────┘ ◄── top of stack
+```
+
+Forget the base case and the function calls itself until the stack runs out. The program crashes with a **stack overflow** (on Linux usually `Segmentation fault`, on Windows it just stops with a non-zero exit code). Each frame costs memory, so very deep recursion (hundreds of thousands of calls) can crash even when it is correct. A loop is often the safer choice for simple counting; recursion shines when a problem **contains smaller copies of itself**, like the puzzle in Exercise E3.
+
 ---
 
 ## Why it matters (low-level view)
@@ -197,6 +252,54 @@ Hint: print the space *before* every prime except the first, so the line does no
 
 ---
 
+### Exercise E3 — Tower of Hanoi *(stretch)*
+
+Three pegs `A`, `B`, `C`. Peg `A` holds `n` disks, the biggest at the bottom. Move them all to `C`. Rules: move one disk at a time, and never put a bigger disk on a smaller one.
+
+**Worked example** — the recursion pattern on a simpler problem, printing `1` to `n`:
+
+```c
+#include <stdio.h>
+
+void print_up_to(int n)
+{
+    if (n == 0) {
+        return;
+    }
+    print_up_to(n - 1);   /* first print 1 .. n-1 */
+    printf("%d\n", n);    /* then n itself */
+}
+
+int main(void)
+{
+    print_up_to(4);
+    return 0;
+}
+```
+
+Output: `1` `2` `3` `4`, one per line. Swap the two lines inside the function and predict the output before you run it.
+
+**The trick**: to move `n` disks from `from` to `to`, first move the top `n - 1` disks out of the way to `spare`, then move disk `n`, then move the `n - 1` disks from `spare` onto it. Moving zero disks does nothing — that is the base case. Trust that the smaller call works; you do not have to trace every move in your head.
+
+**Your task**: Write `int hanoi(int n, char from, char to, char spare)`. It prints every move as `move disk <k> from <peg> to <peg>` and **returns** how many moves it made. `main` reads `n` (`1`–`20`; otherwise print an error to `stderr` and exit `1`), calls `hanoi(n, 'A', 'C', 'B')`, and prints `moves=<count>`.
+
+**Desired output** for `3`:
+
+```text
+move disk 1 from A to C
+move disk 2 from A to B
+move disk 1 from C to B
+move disk 3 from A to C
+move disk 1 from B to A
+move disk 2 from B to C
+move disk 1 from A to C
+moves=7
+```
+
+Run it for `1` to `10` and look at `moves`. Can you spot the pattern? (Legend says monks are moving 64 disks; at one move per second they need about 585 billion years.)
+
+---
+
 ## Mini-project — ASCII art drawer
 
 Build a tiny drawing program out of small functions. Each function does one job, and bigger shapes reuse smaller ones.
@@ -263,6 +366,7 @@ int main(void)
 3. What happens to a function's local variables when it returns?
 4. What does `-Wall` report when a non-`void` function can end without `return`?
 5. Why is returning `&local` a bug?
+6. What two parts does every recursive function need?
 
 ## Recap
 
@@ -270,6 +374,7 @@ int main(void)
 - Each call gets its own stack frame; arguments are copies.
 - Locals die when the function returns — never return their address.
 - Every path through a non-`void` function must `return` a value.
+- A recursive function needs a base case and a smaller recursive call; each call gets its own frame, so too-deep recursion overflows the stack.
 
 ## Spaced review
 
@@ -278,7 +383,7 @@ int main(void)
 
 ## Answers
 
-Quiz: 1. A declaration (`int twice(int n);`) that tells the compiler a function's name and types; needed when the call comes before the definition in the file. 2. No — it receives a copy. 3. They cease to exist; their memory is reused. 4. `control reaches end of non-void function`. 5. The variable dies when the function returns, so the pointer dangles.
+Quiz: 1. A declaration (`int twice(int n);`) that tells the compiler a function's name and types; needed when the call comes before the definition in the file. 2. No — it receives a copy. 3. They cease to exist; their memory is reused. 4. `control reaches end of non-void function`. 5. The variable dies when the function returns, so the pointer dangles. 6. A base case that returns without recursing, and a recursive call on a smaller problem.
 
 Spaced review: 1. `n` times (for `n >= 1`). 2. `size_t`.
 

@@ -28,6 +28,7 @@ I3 has three files: `gcc -std=c17 -Wall -Wextra -g I3/main.c I3/person.c -o pers
 | D3 | [D3.c](D3.c) | Every branch stores into `result`, and there is one `printf` at the end, so the output format is written once. The power loop multiplies `b` times; `b == 0` runs the loop zero times and leaves `1`. Large powers can still overflow `int` — a good stretch fix. |
 | E1 | [E1.c](E1.c) | `max3` reuses `max2` instead of repeating comparisons: write logic once, call it many times. |
 | E2 | [E2.c](E2.c) | `d <= n / d` means the same as `d * d <= n` but cannot overflow for large `n`. The space is printed *before* every prime except the first, which avoids a trailing space. |
+| E3 | [E3.c](E3.c) | `hanoi` returns its move count instead of using a global, so each call adds up the counts of its two smaller calls. The `n > 20` limit keeps the output under about a million lines (`2^n - 1` moves). |
 | F1 | [F1.c](F1.c) | `max` and `min` start at `t[0]`, not at `0`: starting at `0` would give the wrong minimum if all values were positive, or the wrong maximum if all were negative. |
 | F2 | [F2.c](F2.c) | The loop starts at `n - 1`, the last valid index. Starting at `n` would read one element past the data. |
 | F3 | [F3.c](F3.c) | The functions take the length as a parameter because a function cannot find an array's length from the pointer it receives. |

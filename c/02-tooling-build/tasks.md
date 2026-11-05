@@ -6,6 +6,7 @@
 - Make builds repeatable and strict (warnings, debug/release).
 - Learn to debug crashes and inspect stack traces.
 - Learn to detect memory errors early (sanitizers / leak tools).
+- Automate builds with `make` and check your code with a test program.
 
 ## References (concept-only)
 - **C toolchains & flags**: [GCC warning options](https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html), [Clang diagnostics](https://clang.llvm.org/diagnostics.html)
@@ -140,6 +141,91 @@ Thread 1 received signal SIGILL, Illegal instruction.
 
 For the full set of checks on Windows, use **WSL2** (see [Setup](../../00-setup/README.md)) or MSVC.
 
+### 4. `make`: rebuild only what changed
+
+Typing long `gcc` commands gets old fast, and with many files you forget one. **`make`** reads a file called `Makefile` that lists **targets**, what each one **depends on**, and the **command** that builds it:
+
+```text
+target: dependencies
+<TAB>command
+```
+
+The command line **must** start with a real Tab character, not spaces. (`Makefile:5: *** missing separator. Stop.` means spaces.)
+
+```make
+CC = gcc
+CFLAGS = -std=c17 -Wall -Wextra -Werror -g
+
+demo: main.o mathx.o
+	$(CC) $(CFLAGS) main.o mathx.o -o demo
+
+main.o: main.c mathx.h
+	$(CC) $(CFLAGS) -c main.c -o main.o
+
+mathx.o: mathx.c mathx.h
+	$(CC) $(CFLAGS) -c mathx.c -o mathx.o
+
+clean:
+	rm -f *.o demo
+
+.PHONY: clean
+```
+
+Run `make` and it builds the **first** target, `demo`. Before building anything, `make` compares file times: `main.o` is rebuilt only if `main.c` or `mathx.h` is newer than it. Change only `mathx.c` and run `make` again: just `mathx.c` is recompiled and the program re-linked. This is the compile/link split from C 01 Subchapter D, automated.
+
+- `$(CC)` and `$(CFLAGS)` are variables, so one edit changes the flags everywhere.
+- `make clean` runs the `clean` target. `.PHONY` says `clean` is a command name, not a file.
+- A **pattern rule** replaces the repeated `.o` rules: `%.o: %.c mathx.h` with the command `$(CC) $(CFLAGS) -c $< -o $@` (`$<` is the first dependency, `$@` is the target).
+
+**Getting `make`**: Linux/WSL `sudo apt install make`; macOS comes with it after `xcode-select --install`; MSYS2 `pacman -S make` (inside the MSYS2 shell) or `pacman -S mingw-w64-ucrt-x86_64-make`, which installs it as `mingw32-make`. On Windows, programs get a `.exe` suffix the Makefile does not name, so `make` may re-link them every time — harmless. Run the `rm` and `./prog` commands of a Makefile from a Unix-like shell (MSYS2, Git Bash, WSL).
+
+### 5. Testing: let the computer check your code
+
+Running your program by hand and reading the output works once. After the tenth change you stop doing it carefully. A **test program** calls your functions with known inputs and checks the answers every time, in a second.
+
+The quickest check is `assert` from `<assert.h>`: `assert(gcd(12, 18) == 6);` does nothing when the condition is true, and stops the program with the file, line and condition when it is false. Release builds with `-DNDEBUG` remove every `assert` (Learn §1), so never put code with side effects inside one.
+
+`assert` stops at the first failure. A tiny helper function reports **all** of them and gives a summary:
+
+```c
+#include <stdio.h>
+
+static int checks = 0;
+static int failures = 0;
+
+static void check(int ok, const char *what)
+{
+    checks++;
+    if (!ok) {
+        failures++;
+        printf("FAIL: %s\n", what);
+    }
+}
+
+static int square(int x)
+{
+    return x * x;
+}
+
+int main(void)
+{
+    check(square(3) == 9, "square(3)");
+    check(square(-4) == 16, "square of a negative");
+    check(square(0) == 0, "square(0)");
+    printf("%d checks, %d failed\n", checks, failures);
+    return failures == 0 ? 0 : 1;   /* exit code: scripts and make can see failure */
+}
+```
+
+Output: `3 checks, 0 failed`. (`static` here means "private to this file" — chapter 03 explains it.)
+
+What to test, for every function:
+- a normal case;
+- the **edges**: `0`, `1`, empty, the smallest and largest allowed value, exactly at a limit and one past it;
+- bad input the function promises to handle (negative numbers, `NULL`).
+
+Keep functions in their own `.c` file (not in the file with `main`), and you can link the **same** code into the real program and into the test program. Add a `test` target that builds and runs the tests, and `make test` becomes your one-word safety net.
+
 ## Exercise 1 — Build modes sanity
 ### Task
 Create a tiny CLI program that prints build information and can intentionally crash.
@@ -194,6 +280,26 @@ Create a program with each of the following bugs (in separate runs or separate m
 3. Exercise 3: the `crash.c` program in Learn §2 *is* the shape you need; write your own version with different names, and practise `frame 1`, `print`, then `up`/`down` between frames.
 4. Exercise 4: one command-line flag per bug, like `--leak`, `--oob`, `--uaf`. For the out-of-bounds write, use a fixed-size array so UBSan's bounds check can see the size.
 
+## Exercise 5 — A Makefile and a test suite
+### Task
+Build a small math module the way real C projects are laid out:
+- `mathx.h` / `mathx.c` with `int clamp(int v, int lo, int hi)`, `int gcd(int a, int b)` (works for negatives; `gcd(0, 0)` is `0`) and `int is_prime(int n)`.
+- `main.c`: reads two integers `a b` and prints `gcd=`, `clamp=` (`a` limited to `0`–`100`) and `prime=yes`/`prime=no` (for `a`).
+- `test_mathx.c`: at least 15 checks with the `check` helper from Learn §5, covering the edges of every function.
+- A `Makefile` with targets `all` (default: builds `demo` and `test_mathx`), `test` (builds and runs the tests), and `clean`. Object files are built by one pattern rule and depend on `mathx.h`.
+
+### Desired output
+- `make` builds both programs with `-Wall -Wextra -Werror`; a second `make` with no changes builds nothing (on Linux/macOS it prints `make: Nothing to be done for 'all'.`).
+- `make test` prints `<n> checks, 0 failed` and exits `0`.
+- Break `gcd` on purpose (for example return `a + b`): `make test` prints the `FAIL:` lines and `make` reports an error because the test exited `1`.
+- After `touch mathx.h`, `make` recompiles every `.o` file.
+- `demo` with input `84 36` prints `gcd=12`, `clamp=84`, `prime=no`.
+
+### Hints
+1. Start from the Makefile in Learn §4, then replace the two `.o` rules with one pattern rule.
+2. Write the tests **before** fixing the edge cases in `gcd` — watch them fail, then make them pass.
+3. `is_prime`: loop while `d <= n / d` (not `d * d <= n`, which can overflow).
+
 ## Checkpoint quiz
 
 1. Which flags make a debug build, and which make a release build?
@@ -204,6 +310,8 @@ Create a program with each of the following bugs (in separate runs or separate m
 6. Which tool would you use for a use-after-free on Linux? On Windows with MinGW GCC only?
 7. Why do sanitizer builds belong only in testing, not in the final release?
 8. In UBSan trap mode, the program stops with `Illegal instruction` and no message. How do you find the line?
+9. How does `make` decide whether to rebuild `main.o`?
+10. Why must a test program exit non-zero when a check fails?
 
 ## Recap
 
@@ -211,6 +319,8 @@ Create a program with each of the following bugs (in separate runs or separate m
 - Warnings are free bug reports — make them errors with `-Werror`.
 - gdb: `run`, `bt`, `frame`, `print`, `break`, `next`, `step`.
 - Sanitizers catch memory and undefined-behavior bugs while the program runs; availability depends on your platform.
+- `make` rebuilds only targets older than their dependencies; recipe lines start with a Tab.
+- A test program checks normal cases and edges every time; `make test` runs it.
 
 ## Spaced review
 
@@ -220,7 +330,7 @@ Create a program with each of the following bugs (in separate runs or separate m
 
 ## Answers
 
-Quiz: 1. Debug: `-g -O0`; release: `-O2 -DNDEBUG` (both with `-Wall -Wextra`). 2. Turns every warning into an error, so the build fails. 3. Frame `#0`. 4. `up` (or `frame 1`). 5. Extra checking code the compiler adds to catch bugs at run time. 6. AddressSanitizer (or Valgrind); with MinGW GCC only, use WSL2, MSVC `/fsanitize=address`, or Dr. Memory. 7. They make the program slower and larger. 8. Run it under gdb and type `run`; gdb shows the file and line where it stopped.
+Quiz: 1. Debug: `-g -O0`; release: `-O2 -DNDEBUG` (both with `-Wall -Wextra`). 2. Turns every warning into an error, so the build fails. 3. Frame `#0`. 4. `up` (or `frame 1`). 5. Extra checking code the compiler adds to catch bugs at run time. 6. AddressSanitizer (or Valgrind); with MinGW GCC only, use WSL2, MSVC `/fsanitize=address`, or Dr. Memory. 7. They make the program slower and larger. 8. Run it under gdb and type `run`; gdb shows the file and line where it stopped. 9. It compares file times: if `main.c` or any other listed dependency is newer than `main.o`, it runs the rule. 10. So `make`, scripts and CI notice the failure without reading the output.
 
 Spaced review: 1. Later messages are often caused by the first one and disappear when it is fixed. 2. An object file (`.o`), not yet linked. 3. They cease to exist; their stack space is reused.
 

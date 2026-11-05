@@ -148,6 +148,8 @@ def check_foundation_outputs(cc, work, sanitize):
         ("H2", "5\n4 9 2 9 1\n", (), "max=9 index=1\n", 0),
         ("I1", "-1 2 2 -2\n", (), "dist2=25\n", 0),
         ("I2", "averyveryverylongname 3\n", (), "", 1),
+        ("E3", "2\n", (), "move disk 1 from A to B\nmove disk 2 from A to C\nmove disk 1 from B to C\nmoves=3\n", 0),
+        ("E3", "0\n", (), "", 1),
         ("B-mini", "30 4 2.5\n", (), "age, number of cats, price of one cat: \nAt age 30, I adopted 4 cats.\n"
             "Each cat cost 2.50 coins, so the bill was 10.00 coins.\nBy age 40 I will have 8 cats.\n", 0),
         ("C-mini", "7 3 8 12.50\n", (), "pizzas=3\nleftover=3\ntotal=37.50\neach=5.36\n", 0),
