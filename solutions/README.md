@@ -14,6 +14,7 @@ There is often more than one good solution. Yours does not have to match line fo
 | C 00 — Foundation (every exercise) | [c/00-foundation](c/00-foundation/README.md) |
 | C 01 — Low-level mental model (every exercise) | [c/01-low-level-mental-model](c/01-low-level-mental-model/README.md) |
 | C 02–15 (every exercise) | [c/chapters-02-15.md](c/chapters-02-15.md) |
+| Graphics track G1–G6 | [c/graphics](c/graphics/README.md) |
 | C++ bridge B1–B8 (one exercise per chapter) | [cpp/bridge](cpp/bridge/README.md) |
 
 Module J (the boss challenge) has **no** published solution on purpose: it is the pass/fail gate for chapter 00. Use its hints and the automatic check in `c/00-foundation/tests/` instead.

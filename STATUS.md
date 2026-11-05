@@ -51,6 +51,13 @@ Also:
 - **06 (new)** — data structures: Big-O, linked list, hash map (FNV-1a), binary heap, BST.
 - **13 (new)** — performance: memory hierarchy, honest timing, data layout, profiling. All numbers quoted are measured.
 
+### Course v2 additions (branch `course-v2`)
+- Chapters renumbered `c/00` … `c/16` in one straight line.
+- Chapter 00 Modules B–I each end with a **mini-project** (Mad Libs, pizza planner, guessing game, ASCII art, bar chart, Caesar cipher, coin shop, text adventure), with tested solutions.
+- Chapter 01 Subchapter G: PPM images; milestone **M0.5** Mandelbrot poster.
+- New lessons: recursion (Module E), `make` and unit testing (C 02), text files (C 03), sorting and searching (C 06).
+- **Graphics track** `graphics/` G1–G6 (canvas, lines, triangles, 3D wireframe, shaded OBJ models, ray tracer) with reference solutions and rendered pictures. G7–G9 (real-time window, engine, render server) and the GPU track are planned, not written.
+
 ### Milestones
 - [milestones/README.md](milestones/README.md) — M1 `strlib`, M2 `hashmap`, M3 `minish`, M4 `kvserver`, M5 `mymalloc`, and C++ M1 (modern C++ rewrite), each with a spec, a test plan and a grading table. Linked from the chapters where they fit.
 

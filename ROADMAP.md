@@ -103,6 +103,9 @@ You will design message formats and add integrity checks (checksums/hashes), foc
 ### 16) Capstone
 You will pick one larger project that ties together parsing + I/O + debugging + performance discipline.
 
+### Graphics track (C) — `graphics/`
+After C 05, you can start the **[graphics track](graphics/README.md)** alongside the C chapters: build a software renderer from scratch — a pixel canvas, lines, triangles, 3D math and a spinning wireframe cube, a shaded OBJ model with a depth buffer, and a ray tracer with shadows and reflections (G1–G6). Planned next: a real-time window, a small game engine, a render server, and a GPU track in C++.
+
 ## Book guides (C early path, concept-only)
 
 Use these for **concepts**, not as required cover-to-cover reading:
