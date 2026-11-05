@@ -182,6 +182,30 @@ Output of the worked example for input `3 5`: `a=3` then `b=5`.
 
 ---
 
+## Mini-project — Number Mad Libs
+
+Time to build something silly. Your program asks for three numbers and turns them into a short story.
+
+**Spec**
+- Print a prompt, then read an `int` age, an `int` number of cats, and a `double` price.
+- If `scanf` does not read all three, print an error and exit `1`.
+- Print three story lines that use the numbers, including at least one calculation (for example `cats * price`).
+
+**Example run** (input `30 4 2.5`):
+
+```text
+age, number of cats, price of one cat: 
+At age 30, I adopted 4 cats.
+Each cat cost 2.50 coins, so the bill was 10.00 coins.
+By age 40 I will have 8 cats.
+```
+
+**Make it yours**: change the story completely — dragons, pizzas, spaceships. Add a fourth number. Swap `%.2f` for `%8.2f` and see the padding.
+
+Reference: [`solutions/c/00-foundation/B-mini.c`](../../../solutions/c/00-foundation/B-mini.c)
+
+---
+
 ## Fix the bug
 
 This program should read a name and an age and print `Ada is 36`. It has **two** bugs from this module's case studies:

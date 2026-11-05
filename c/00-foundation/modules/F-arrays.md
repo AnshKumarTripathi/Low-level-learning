@@ -235,6 +235,31 @@ Print the average with 2 decimals and the count above it.
 
 ---
 
+## Mini-project — ASCII bar chart
+
+Turn a list of numbers into a picture.
+
+**Spec**
+- Read `n` (`1`–`20`), then `n` values (`0`–`50`). Anything out of range → exit `1`.
+- For each value, print its position (width 2), ` |`, one `#` per unit, then a space and the value.
+- Finally print `best=` and the position of the largest value (the first one if there is a tie).
+
+**Example run** (input `4`, then `3 7 0 5`):
+
+```text
+ 1 |### 3
+ 2 |####### 7
+ 3 | 0
+ 4 |##### 5
+best=2
+```
+
+**Make it yours**: chart your hours of sleep or cups of coffee for a week. Harder: draw the chart **vertically**. Loop over rows from the tallest value down to `1`, and for each column print `#` or a space.
+
+Reference: [`solutions/c/00-foundation/F-mini.c`](../../../solutions/c/00-foundation/F-mini.c)
+
+---
+
 ## Fix the bug
 
 This should print `sum=15`. On GCC 13 at `-O0` it **does** print `sum=15` — and it is still wrong:

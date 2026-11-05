@@ -148,6 +148,19 @@ def check_foundation_outputs(cc, work, sanitize):
         ("H2", "5\n4 9 2 9 1\n", (), "max=9 index=1\n", 0),
         ("I1", "-1 2 2 -2\n", (), "dist2=25\n", 0),
         ("I2", "averyveryverylongname 3\n", (), "", 1),
+        ("B-mini", "30 4 2.5\n", (), "age, number of cats, price of one cat: \nAt age 30, I adopted 4 cats.\n"
+            "Each cat cost 2.50 coins, so the bill was 10.00 coins.\nBy age 40 I will have 8 cats.\n", 0),
+        ("C-mini", "7 3 8 12.50\n", (), "pizzas=3\nleftover=3\ntotal=37.50\neach=5.36\n", 0),
+        ("C-mini", "0 3 8 12.50\n", (), "", 1),
+        ("D-mini", "42\n50 25 40 42\n", (), "too high\ntoo low\ntoo low\ncorrect! tries=4\n", 0),
+        ("D-mini", "7\n1 2 3 4 5 6 8\n", (), "too low\n" * 6 + "too high\nout of tries, it was 7\n", 0),
+        ("E-mini", "1 4 3\n2 3\n0\n", (), "+--+\n|  |\n+--+\n  *\n ***\n*****\n", 0),
+        ("F-mini", "4\n3 7 0 5\n", (), " 1 |### 3\n 2 |####### 7\n 3 | 0\n 4 |##### 5\nbest=2\n", 0),
+        ("G-mini", "3\nHello, World!\n", (), "Khoor, Zruog!\n", 0),
+        ("G-mini", "-3\nKhoor, Zruog!\n", (), "Hello, World!\n", 0),
+        ("H-mini", "1 15\n1 10\n2 7\n1 10\n0\n", (), "coins=5\nnot enough coins (have 5)\ncoins=12\ncoins=2\nfinal coins=2\n", 0),
+        ("I-mini", "w\nn\ns\ne\nn\n", (), "You are in the Hall.\nYou can't go that way.\nYou are in the Library.\n"
+            "You are in the Hall.\nYou are in the Kitchen.\nYou are in the Vault.\nYou found the treasure in 4 moves!\n", 0),
     ]
     built = {}
     for name, stdin, args, expected_out, expected_rc in cases:

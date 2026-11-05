@@ -232,6 +232,37 @@ Output of the worked example for `2` then `10 20`: `v=10`, `v=20`.
 
 ---
 
+## Mini-project — Coin shop
+
+You run a shop and start with `20` coins. Functions change your wallet **through a pointer**.
+
+**Spec**
+- Write `int buy(int *coins, int price)`. If you can afford it, subtract the price and return `1`. Otherwise change nothing and return `0`.
+- Write `void earn(int *coins, int amount)`.
+- `main` keeps `int coins = 20;` and reads commands until it reads `0`:
+  - `1 price` → buy, then print `coins=N` or `not enough coins (have N)`
+  - `2 amount` → earn, then print `coins=N`
+  - a negative amount or an unknown command → exit `1`
+- At the end, print `final coins=N`.
+
+**Example run** (input `1 15`, `1 10`, `2 7`, `1 10`, `0`):
+
+```text
+coins=5
+not enough coins (have 5)
+coins=12
+coins=2
+final coins=2
+```
+
+**Think about it**: why can't `buy` take `int coins` instead of `int *coins`? Try it and watch the wallet never change. That is Case study 1 again.
+
+**Make it yours**: add an item count (`int *items`) that `buy` also updates, or a "sell" command.
+
+Reference: [`solutions/c/00-foundation/H-mini.c`](../../../solutions/c/00-foundation/H-mini.c)
+
+---
+
 ## Fix the bug
 
 `order` should put its two arguments in increasing order. It compiles without warnings and prints `x=9 y=4`:

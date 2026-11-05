@@ -197,6 +197,37 @@ Hint: print the space *before* every prime except the first, so the line does no
 
 ---
 
+## Mini-project — ASCII art drawer
+
+Build a tiny drawing program out of small functions. Each function does one job, and bigger shapes reuse smaller ones.
+
+**Spec**
+- Write `void repeat(char ch, int n)`: print `ch` exactly `n` times, with no newline.
+- Write `void box(int w, int h)` and `void triangle(int h)`, both using `repeat`.
+- `main` reads commands until it reads `0`:
+  - `1 w h` → draw a hollow box (`w` and `h` at least `2`)
+  - `2 h` → draw a triangle `h` rows tall (`h` at least `1`)
+  - anything else → print `error: bad command` and exit `1`
+
+**Example run** (input `1 4 3`, `2 3`, `0`):
+
+```text
++--+
+|  |
++--+
+  *
+ ***
+*****
+```
+
+**Hint**: row `r` of the triangle (counting from `0`) has `h - 1 - r` spaces, then `2 * r + 1` stars. Check this against the picture.
+
+**Make it yours**: add `3 h` for a diamond (a triangle, then the same triangle upside down), or a filled box drawn with a character the user picks.
+
+Reference: [`solutions/c/00-foundation/E-mini.c`](../../../solutions/c/00-foundation/E-mini.c)
+
+---
+
 ## Fix the bug
 
 `sign` should return `1`, `-1` or `0`. On GCC 13 (Windows, `-O0`) this program printed `1 -1 1` — `sign(0)` returned garbage:

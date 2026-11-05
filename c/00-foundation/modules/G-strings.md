@@ -244,6 +244,34 @@ Output of the worked example for `a  bb c`: `tok[0]=a`, `tok[1]=bb`, `tok[2]=c`.
 
 ---
 
+## Mini-project — Caesar cipher
+
+Julius Caesar hid messages by shifting every letter 3 places: `A` → `D`, `B` → `E`, … `Z` → `C`. Build an encoder that also decodes.
+
+**Spec**
+- Line 1: the shift (it may be negative). Line 2: the message (up to 254 characters).
+- Read **both** lines with `fgets`. To get the number out of line 1, use `sscanf(line, "%d", &shift)`. It works like `scanf`, but reads from a string instead of the keyboard.
+- Shift `a`–`z` and `A`–`Z`, wrapping around after `z`/`Z`. Leave everything else (spaces, digits, punctuation) unchanged.
+- Print the result.
+
+**Example runs**:
+
+```text
+input:  3                 output: Khoor, Zruog!
+        Hello, World!
+
+input:  -3                output: Hello, World!
+        Khoor, Zruog!
+```
+
+**The wrap-around**: for a lowercase letter, `c - 'a'` is its position, `0`–`25`. Add the shift, take `% 26`, then add `'a'` back. For negative shifts, first turn the shift into `0`–`25` with `((shift % 26) + 26) % 26`.
+
+**Make it yours**: send a friend an encoded message. Then crack one **without** the key: there are only 25 possible shifts, so print all of them and look for real words. That is a brute-force attack.
+
+Reference: [`solutions/c/00-foundation/G-mini.c`](../../../solutions/c/00-foundation/G-mini.c)
+
+---
+
 ## Fix the bug
 
 This should print `match` when you type `hello`. It always prints `no match`:

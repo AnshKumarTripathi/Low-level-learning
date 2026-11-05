@@ -250,6 +250,45 @@ Compile: `gcc -std=c17 -Wall -Wextra -g main.c person.c -o person_demo`
 
 ---
 
+## Mini-project — Tiny text adventure
+
+Build a map out of structs and walk through it.
+
+**Spec**
+- Define `struct room` with a `char name[16]` and four `int` exits: `north`, `south`, `east`, `west`. Each exit holds the index of the next room in an array, or `-1` for a wall.
+- Make an array of four rooms. Hall is room `0`, where you start. The treasure is in the Vault.
+
+  ```text
+  Library     Vault
+     |          |
+   Hall  ---  Kitchen
+  ```
+
+- Print `You are in the <name>.` at the start and after each move.
+- Read one-letter commands with `scanf(" %c", &cmd)` (the space before `%c` skips newlines).
+  - `n`, `s`, `e`, `w` move. A wall prints `You can't go that way.`
+  - `q` prints `Bye.` and exits.
+  - Any other letter prints `Use n, s, e, w or q.`
+- Reaching the Vault prints `You found the treasure in N moves!` and exits `0`. Bumping into a wall does not count as a move. End of input prints `Bye.`
+
+**Example run** (input `w n s e n`):
+
+```text
+You are in the Hall.
+You can't go that way.
+You are in the Library.
+You are in the Hall.
+You are in the Kitchen.
+You are in the Vault.
+You found the treasure in 4 moves!
+```
+
+**Make it yours**: give each room a description, add a locked door that needs a key you pick up first, or add a room that moves you somewhere random. Draw your map on paper first: the array is that drawing written as numbers.
+
+Reference: [`solutions/c/00-foundation/I-mini.c`](../../../solutions/c/00-foundation/I-mini.c)
+
+---
+
 ## Fix the bug
 
 This is the case study as a complete program. Run it with a long name:

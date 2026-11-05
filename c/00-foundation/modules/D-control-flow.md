@@ -270,6 +270,33 @@ int main(void)
 
 ---
 
+## Mini-project — Guess the number
+
+A two-player game. Player 1 types a secret number; player 2 has 7 tries to guess it.
+
+**Spec**
+- Read the secret (`1`–`100`; anything else → exit `1`).
+- Then read guesses one at a time. After each, print `too low`, `too high`, or `correct! tries=N` and exit `0`.
+- After 7 wrong guesses print `out of tries, it was S` and exit `0`.
+- If `scanf` fails while reading a guess, exit `1`.
+
+**Example run** (input `42`, then `50 25 40 42`):
+
+```text
+too high
+too low
+too low
+correct! tries=4
+```
+
+**Why 7?** If you always guess the middle of what is left, each guess halves the range: 100 → 50 → 25 → 13 → 7 → 4 → 2 → 1. Seven guesses are always enough. This is **binary search**, which comes back in chapter 06.
+
+**Make it yours**: after player 1 types the secret, print 40 empty lines with a loop so player 2 cannot see it. Want the computer to pick the secret? Look up `rand()` and `srand(time(NULL))` from `<stdlib.h>` and `<time.h>`.
+
+Reference: [`solutions/c/00-foundation/D-mini.c`](../../../solutions/c/00-foundation/D-mini.c)
+
+---
+
 ## Fix the bug
 
 This program should print `zero` for input `0`, and otherwise every even number from `0` up to **and including** `n` (for `6`: `0 2 4 6`). Instead it prints an empty line for every input:

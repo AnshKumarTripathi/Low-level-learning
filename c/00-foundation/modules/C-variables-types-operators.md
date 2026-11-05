@@ -164,6 +164,32 @@ Output of the worked example for `10 3`: `sum=13`, `diff=7`, `prod=30`, `quot=3`
 
 ---
 
+## Mini-project — Pizza party planner
+
+You are throwing a party. How many pizzas do you need, and what does each person pay?
+
+**Spec**
+- Read four values: `people`, `slices_each`, `slices_per_pizza` (all `int`), and `price` of one pizza (`double`).
+- Exit `1` if `scanf` fails, or if `people` or `slices_per_pizza` is `0` or less (no dividing by zero). Read `if (...) { return 1; }` as in Module A: "do this only when the condition is true". Module D explains it fully.
+- Print `pizzas=`, `leftover=` (slices nobody eats), `total=` and `each=` (cost per person, 2 decimals).
+
+**Example run** (input `7 3 8 12.50`):
+
+```text
+pizzas=3
+leftover=3
+total=37.50
+each=5.36
+```
+
+**The trick**: you cannot buy 2.6 pizzas. Round up with integers only: `(needed + per_pizza - 1) / per_pizza`. Try it by hand with `per_pizza = 8` and `needed = 16`, then `needed = 17`, to see why it works.
+
+**Make it yours**: add a tip percentage, or a count of vegetarian pizzas.
+
+Reference: [`solutions/c/00-foundation/C-mini.c`](../../../solutions/c/00-foundation/C-mini.c)
+
+---
+
 ## Fix the bug
 
 This program should print the exact average of two integers, for example `avg=4.50` for `7 2`. It compiles with **no warnings** and prints `avg=4.00`:

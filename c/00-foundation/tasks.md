@@ -2,7 +2,7 @@
 
 This chapter assumes **no prior programming**. Content is split into **modules** under [`modules/`](modules/) so each topic stays readable.
 
-Each module follows **Learn → Why it matters → Case study → Try → Exercise**.
+Each module follows **Learn → Why it matters → Case study → Try → Exercise**. Modules B–I end with a **Mini-project**: a small game or tool (Mad Libs, a guessing game, ASCII art, a Caesar cipher, a text adventure, and more) built only from what you have learned so far.
 
 Exercises are labeled **easy → medium → stretch**. Each one starts with a **worked example** that solves a simpler version, followed by **Your task**, which you solve yourself. Tested solutions with explanations are in [`solutions/c/00-foundation/`](../../solutions/c/00-foundation/README.md) — attempt each exercise first.
 

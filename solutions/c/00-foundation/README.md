@@ -39,3 +39,11 @@ I3 has three files: `gcc -std=c17 -Wall -Wextra -g I3/main.c I3/person.c -o pers
 | I1 | [I1.c](I1.c) | Small structs like `Point` can be passed by value. Squared distance avoids `sqrt` and floating point. |
 | I2 | [I2.c](I2.c) | The temporary `name` buffer is as large as the whole line, so `sscanf` can never overflow it, and an overlong name is *detected* instead of silently cut short. The copy uses `memcpy` after the length check has proven it fits. |
 | I3 | [I3/](I3/) | `person_read` does all validation behind the API boundary; `main` only checks the return code. The header has include guards so it is safe to include twice. |
+| B-mini | [B-mini.c](B-mini.c) | The prompt has no newline, so the cursor waits on the same line. The calculations happen inside the `printf` arguments; no extra variables are needed for a one-off value. |
+| C-mini | [C-mini.c](C-mini.c) | `(needed + per_pizza - 1) / per_pizza` rounds up using only integer division. Both zero checks come before any division. |
+| D-mini | [D-mini.c](D-mini.c) | `tries` is counted before comparing, so the correct guess is included. The loop condition alone enforces the 7-try limit. |
+| E-mini | [E-mini.c](E-mini.c) | Every shape is built from `repeat`, so the counting logic lives in one place. The `&&` chain in `main` reads the arguments only for a known command and checks them in the same condition. |
+| F-mini | [F-mini.c](F-mini.c) | `best` stores an index, not a value, so the position is available at the end. Using `>` (not `>=`) keeps the first of several equal maximums. |
+| G-mini | [G-mini.c](G-mini.c) | Both lines come from `fgets`, so no `scanf` leaves a stray newline behind. Normalising the shift once makes negative shifts work with the same formula. The newline from `fgets` is not a letter, so it passes through unchanged. |
+| H-mini | [H-mini.c](H-mini.c) | `buy` checks before it changes anything, so a failed purchase leaves the wallet untouched. Only `main` owns `coins`; the functions borrow it through a pointer. |
+| I-mini | [I-mini.c](I-mini.c) | The map is pure data: adding a room means adding one array entry, not new `if` statements. `continue` skips the move counter for walls and unknown commands. |
