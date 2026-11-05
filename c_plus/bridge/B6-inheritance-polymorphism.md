@@ -114,7 +114,7 @@ int main()
 ```
 
 - **Cost of a virtual call:** two memory loads and an indirect call, and usually **no inlining**. Negligible for a GUI button, measurable in a tight loop over millions of particles.
-- The vptr is also an attack target: overwriting it (a heap overflow into an object) redirects every virtual call — the C++ version of overwriting a return address (C 11).
+- The vptr is also an attack target: overwriting it (a heap overflow into an object) redirects every virtual call — the C++ version of overwriting a return address (C 14).
 
 ### 3. Two classic traps
 
@@ -157,7 +157,7 @@ Hints: `std::unordered_map<std::string, std::unique_ptr<Command>>`. Unknown comm
 
 ### Exercise B6.3 — Look at the vtable *(stretch)*
 1. Remove `virtual` from `~Shape` and run the example under ASan on Linux/WSL with a derived class that owns a `std::string`. Record the report.
-2. Build the example with `-O2 -S` and find the indirect `call` for `s->area()` in the assembly (C 10). Then make the vector hold only `Rect` (no virtual needed) and compare.
+2. Build the example with `-O2 -S` and find the indirect `call` for `s->area()` in the assembly (C 12). Then make the vector hold only `Rect` (no virtual needed) and compare.
 
 Hints: with `g++ -O2 -S -masm=intel`, GCC 13 writes indirect calls like `call [QWORD PTR 16[rax]]` — a call through the address stored 16 bytes into the vtable.
 
@@ -183,9 +183,9 @@ Hints: with `g++ -O2 -S -masm=intel`, GCC 13 writes indirect calls like `call [Q
 
 ## Spaced review
 
-1. (C 10) What is an indirect call in assembly?
+1. (C 12) What is an indirect call in assembly?
 2. (B3) Which smart pointer owns a single heap object?
-3. (C 11) Why is overwriting a function pointer dangerous?
+3. (C 14) Why is overwriting a function pointer dangerous?
 
 ## Answers
 

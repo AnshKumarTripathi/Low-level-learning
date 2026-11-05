@@ -28,7 +28,7 @@ These features replace the remaining C habits: macros become `constexpr`, pointe
 #include <cstdint>
 #include <cstdio>
 
-// The CRC32 table from C 12, built by the compiler instead of at run time.
+// The CRC32 table from C 15, built by the compiler instead of at run time.
 constexpr std::array<std::uint32_t, 256> make_crc_table()
 {
     std::array<std::uint32_t, 256> table{};
@@ -63,7 +63,7 @@ int main()
 }
 ```
 
-Output: `table[1] = 77073096` and `crc32("hello") = 3610a686` (the same as the C 12 bit-by-bit version).
+Output: `table[1] = 77073096` and `crc32("hello") = 3610a686` (the same as the C 15 bit-by-bit version).
 
 - `constexpr` on a variable: its value is computed at compile time. On a function: it *can* run at compile time when its arguments are constants.
 - `consteval` on a function: it *must* run at compile time.
@@ -176,12 +176,12 @@ Headers are textual copy-paste (C 01-D): every file that includes `<iostream>` r
 ## Exercises
 
 ### Exercise B8.1 — Compile-time base64 table *(easy)*
-Build the base64 alphabet from C 04 Exercise 4 as a `constexpr std::array<char, 64>` with a `constexpr` function, and check three entries with `static_assert`. Then encode `"foobar"` and check it against `Zm9vYmFy`.
+Build the base64 alphabet from C 05 Exercise 4 as a `constexpr std::array<char, 64>` with a `constexpr` function, and check three entries with `static_assert`. Then encode `"foobar"` and check it against `Zm9vYmFy`.
 
 Hints: `'A' + i` for 0–25, `'a' + (i - 26)` for 26–51, `'0' + (i - 52)` for 52–61, then `'+'` and `'/'`.
 
 ### Exercise B8.2 — Span-based hexdump *(medium)*
-Rewrite your C 04 hexdump core as `void hexdump(std::span<const std::byte> data, std::size_t width)` using `std::format` for every line. Read the file into a `std::vector<std::byte>`.
+Rewrite your C 05 hexdump core as `void hexdump(std::span<const std::byte> data, std::size_t width)` using `std::format` for every line. Read the file into a `std::vector<std::byte>`.
 
 Hints: `std::to_integer<int>(b)` turns a `std::byte` into a number; `std::format("{:08x}", offset)` prints the offset.
 
@@ -214,7 +214,7 @@ Hints: GCC's `-Wdangling-reference` (in `-Wall` since GCC 13) and `-Wreturn-loca
 
 ## Spaced review
 
-1. (C 12) What is the CRC32 check value of `"123456789"`?
+1. (C 15) What is the CRC32 check value of `"123456789"`?
 2. (B4) Why can a `push_back` invalidate a `std::span` over a vector?
 3. (B3) Which smart pointer would you return from a factory function?
 

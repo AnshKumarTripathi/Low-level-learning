@@ -30,6 +30,8 @@ printf("sizeof(int)=%zu\n", sizeof(int));
 
 (`%zu` prints a `size_t` — the type `sizeof` returns.)
 
+> **Coming from Python?** Python integers never overflow; a C `int` has a fixed size (usually 32 bits) and signed overflow is undefined behavior. `/` between two `int`s is **integer** division in C (`7 / 2` is `3`), like Python's `//` — but it rounds toward zero, so `-7 / 2` is `-3`, while Python's `-7 // 2` is `-4`. There is no `**`: use a loop or `pow()` from `<math.h>`.
+
 ---
 
 ## Why it matters (low-level view)
@@ -159,6 +161,57 @@ Output of the worked example for `10 3`: `sum=13`, `diff=7`, `prod=30`, `quot=3`
 - for `7 2`: `quot=3`, `rem=1`, `exact=3.50`
 - for `-7 2`: `quot=-3`, `rem=-1`, `exact=-3.50` (C rounds integer division toward zero)
 - for `7 0`: `error: divide by zero` on stderr, exit `1`
+
+---
+
+## Fix the bug
+
+This program should print the exact average of two integers, for example `avg=4.50` for `7 2`. It compiles with **no warnings** and prints `avg=4.00`:
+
+```c
+#include <stdio.h>
+
+int main(void)
+{
+    int a, b;
+    if (scanf("%d %d", &a, &b) != 2) {
+        return 1;
+    }
+    double avg = (a + b) / 2;
+    printf("avg=%.2f\n", avg);
+    return 0;
+}
+```
+
+1. Explain why storing the result in a `double` does not help.
+2. Fix it. Check `7 2` → `avg=4.50` and `-3 2` → `avg=-0.50`.
+3. Stretch: what happens for `2000000000 2000000000`? Fix that too (hint: convert before adding).
+
+## Checkpoint quiz
+
+1. What is `17 % 5`? What is `-7 / 2` in C?
+2. Is signed `int` overflow defined in C? Unsigned?
+3. Why can `sizeof(long)` differ between Windows and Linux?
+4. What does `(double)a / b` do differently from `(double)(a / b)`?
+5. Which type does `sizeof` return, and how do you print it?
+
+## Recap
+
+- Every variable has a fixed type and size; `sizeof` tells you how many bytes.
+- `int / int` throws away the fraction; cast one side to `double` for real division.
+- Signed overflow is undefined; unsigned wraps around.
+- Use `<stdint.h>` fixed-width types when the exact size matters.
+
+## Spaced review
+
+1. (Module B) Which marker reads a `double` with `scanf`?
+2. (Module A) What does a non-zero exit code mean?
+
+## Answers
+
+Quiz: 1. `2`; `-3`. 2. No — undefined behavior; unsigned wraps around (well-defined). 3. 64-bit Windows uses a 4-byte `long` (LLP64); 64-bit Linux/macOS use 8 bytes (LP64). 4. The first converts `a` before dividing, keeping the fraction; the second divides as integers first, then converts the already-truncated result. 5. `size_t`, printed with `%zu`.
+
+Spaced review: 1. `%lf`. 2. The program failed.
 
 **References (concept-only)**:
 - King — types and operators

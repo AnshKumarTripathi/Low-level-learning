@@ -63,6 +63,8 @@ One `.c` file → one program is enough until Module I.
 | I | [Structs & multi-file](modules/I-structs-multi-file.md) | `struct`, `.h`/`.c` | API boundaries & input validation |
 | J | [Boss challenge](modules/J-boss-challenge.md) | **All of A–I** | Safe input, bounds, duplicates — gate to ch. 01 |
 
+Already program in another language? Take the [fast-track placement test](fast-track.md) (about 2 hours) to find where to start.
+
 Finish A–I in order, then clear **J**. Treat J as a pass/fail gate: hints are allowed; a full pasted solution is not.
 
 ---
@@ -70,4 +72,4 @@ Finish A–I in order, then clear **J**. Treat J as a pass/fail gate: hints are 
 ## C track notes
 - Re-read **Case study** whenever an exercise feels mysterious — that section is the “why” for low-level C.
 - After **passing Module J**, continue to **01 — Low-level mental model**, then tooling and deeper memory work.
-- Chapter **11 — CTF / Pwn Lab** builds directly on habits you form here (bounds, addresses, ownership).
+- Chapter **14 — CTF / Pwn Lab** builds directly on habits you form here (bounds, addresses, ownership).

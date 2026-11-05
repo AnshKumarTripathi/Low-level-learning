@@ -349,7 +349,41 @@ Include `<stdint.h>` for `uintptr_t`. This is a curiosity check for your machine
 
 ---
 
+## Checkpoint quiz
+
+1. Convert `0x2F` to decimal and to binary.
+2. What does `%p` print, and why cast the pointer to `void *`?
+3. On a little-endian machine, which byte of `0xAABBCCDD` is stored at the lowest address?
+4. Name the four steps from a `.c` file to an executable.
+5. You get `undefined reference to 'add'`. Which step failed, and what is the usual cause?
+6. What does `gcc -c` produce?
+7. Where does a local variable live, and when does it disappear?
+8. What must you do right after every `malloc`?
+9. Why might a Windows machine print `obs=local_addr_le_heap` while the diagram suggests the opposite?
+10. What does `free` do, and why set the pointer to `NULL` afterwards?
+
+## Recap
+
+- Everything is bits; hex is a compact way to write bytes (4 bits per digit).
+- Every variable has a size (`sizeof`) and an address (`&`, printed with `%p`).
+- Multi-byte values are stored in an order: x86-64 is little-endian.
+- Build pipeline: preprocess → compile → assemble → link; `-c` stops before linking.
+- Locals live on the stack until their function returns; `malloc` blocks live on the heap until `free`.
+- Memory layouts differ between operating systems; observe yours instead of assuming.
+
+## Spaced review
+
+1. (Module F) How does C compute the address of `a[i]`?
+2. (Module H) What does `*p = 5` do?
+3. (Module I) Which files does `gcc main.c person.c -o prog` compile, and what does it link?
+
+## Answers
+
+Quiz: 1. 47; `0010 1111`. 2. An address, in an implementation-defined format; `%p` is defined for `void *`, so other pointer types are converted to it. 3. `0xDD`. 4. Preprocess, compile, assemble, link. 5. The link step; `add` is declared but its definition is missing (for example the `.c` or `.o` file was left off the command). 6. An object file (`.o`) that is not yet linked. 7. On the stack; when its function returns. 8. Check whether it returned `NULL`. 9. On 64-bit Windows the stack is usually placed at lower addresses than the heap, and ASLR moves everything each run. 10. Returns the block to the allocator; setting the pointer to `NULL` makes accidental later use crash clearly instead of silently using freed memory.
+
+Spaced review: 1. Base address + `i * sizeof(element)`. 2. Writes 5 into the variable `p` points to. 3. Both `main.c` and `person.c` are compiled, and their object files are linked together (with the C library) into `prog`.
+
 ## C track notes
-- After this chapter, go to **02 — Tooling & Build Discipline** for warnings, debug builds, and sanitizers.
-- Then **03 — Memory, Pointers, Lifetimes** goes much deeper (containers, ownership APIs, UB awareness).
+- After this chapter, go to **02 — Tooling & Build Discipline** for warnings, debug builds, and sanitizers, then **03 — C Language II** for the rest of everyday C.
+- Then **04 — Memory, Pointers, Lifetimes** goes much deeper (containers, ownership APIs, UB awareness).
 - Keep the mental model simple: **bits → bytes at addresses → compile/link → stack vs heap**.

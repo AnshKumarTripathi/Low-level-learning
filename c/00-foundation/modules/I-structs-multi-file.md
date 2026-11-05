@@ -38,6 +38,20 @@ Rule of thumb: a struct variable uses `.`, a pointer to a struct uses `->`.
 
 Keep APIs tiny: two functions is enough.
 
+The fields of a struct sit in memory in the order you declare them:
+
+```text
+struct User { char name[16]; int is_admin; };        sizeof(struct User) = 20
+
+offset:  0                                        15   16           19
+        ┌─────────────────────────────────────────┬─────────────────┐
+        │ name[0] ... name[15]                    │    is_admin     │
+        └─────────────────────────────────────────┴─────────────────┘
+          a strcpy of 17 or more characters runs off the end of name ──► into is_admin
+```
+
+> **Coming from Python?** A struct is like a class with only data fields: no methods, no constructor, no hidden reference. `a = b;` copies **every byte** of `b` into `a` — two independent structs, not two names for one object. To let a function change a struct, pass its address (`struct User *`).
+
 ---
 
 ## Why it matters (low-level view)
@@ -233,6 +247,67 @@ int main(void)
 Compile: `gcc -std=c17 -Wall -Wextra -g main.c person.c -o person_demo`
 
 **Desired output**: same as I1 on success; `error: name too long` on overlong name.
+
+---
+
+## Fix the bug
+
+This is the case study as a complete program. Run it with a long name:
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+struct User {
+    char name[16];
+    int is_admin;
+};
+
+void set_name(struct User *u, const char *input)
+{
+    strcpy(u->name, input);
+}
+
+int main(int argc, char *argv[])
+{
+    struct User u = {"", 0};
+    set_name(&u, argc > 1 ? argv[1] : "guest");
+    printf("name=%s is_admin=%d\n", u.name, u.is_admin);
+    return 0;
+}
+```
+
+With GCC 13 on Windows, `./user AAAAAAAAAAAAAAAAB` (16 `A`s then `B`) printed `is_admin=66` — `66` is the ASCII code of `B`, written straight into `is_admin`. No warning at compile time.
+
+1. Change `set_name` to return `int`: `0` on success, `-1` if the name does not fit — and copy nothing in that case.
+2. In `main`, print `error: name too long` to stderr and exit `1` when it fails.
+3. Check: `guest` works; 15 characters work; 16 characters are rejected; `is_admin` stays `0` in every case.
+
+## Checkpoint quiz
+
+1. When do you use `.` and when `->`?
+2. What does `a = b;` do when `a` and `b` are structs?
+3. What belongs in a `.h` file, and what in the `.c` file?
+4. What do include guards prevent?
+5. Why should length checks happen inside the function that copies into the struct?
+
+## Recap
+
+- A struct groups fields in a fixed order in memory; `sizeof` includes any padding.
+- `.` on a struct, `->` through a pointer to one.
+- Headers hold declarations; one `.c` file holds each definition; include guards stop double inclusion.
+- Validate at the API boundary: the function that fills the struct checks the sizes.
+
+## Spaced review
+
+1. (Module H) How does a function change its caller's variable?
+2. (Module G) Which function copies a string safely into a fixed-size buffer?
+
+## Answers
+
+Quiz: 1. `.` on a struct variable, `->` on a pointer to a struct. 2. Copies all of `b`'s bytes into `a`. 3. Declarations (types, prototypes) in `.h`; definitions (function bodies, global variables) in `.c`. 4. A header being included twice in one file, which would redeclare its types. 5. So every caller is protected, instead of trusting each caller to remember.
+
+Spaced review: 1. By receiving its address and writing through the pointer. 2. `snprintf(dst, sizeof dst, "%s", src)` (or a checked `memcpy`).
 
 **References (concept-only)**:
 - King — structures; program organization

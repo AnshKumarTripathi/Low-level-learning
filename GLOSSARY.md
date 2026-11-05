@@ -9,7 +9,7 @@ Plain-language definitions of terms used across the course. The "First seen" col
 | **address** | The number that says where a piece of data sits in memory. `&x` gives the address of `x`. | C 00-B, 00-H |
 | **array** | A fixed number of values of the same type stored side by side in memory, numbered from `0`. | C 00-F |
 | **ASLR** | Address space layout randomization: the OS places stack, heap and code at different addresses each run, which makes attacks harder. | C 01-F |
-| **assembly** | A human-readable form of the machine instructions the CPU runs. | C 01-D, C 10 |
+| **assembly** | A human-readable form of the machine instructions the CPU runs. | C 01-D, C 12 |
 | **backtrace** | The list of function calls that led to the current point, newest first. `bt` in gdb. | C 02 |
 | **bit / byte** | A bit is a single 0 or 1. A byte is 8 bits, the smallest unit with its own address. | C 01-A |
 | **buffer** | A block of memory used to hold data, usually an array of `char` or `unsigned char`. | C 00-G |
@@ -43,7 +43,7 @@ Plain-language definitions of terms used across the course. The "First seen" col
 | **stderr / stdout / stdin** | The three standard streams: error output, normal output, and input. | C 00-A |
 | **struct** | A type that groups named fields into one record. | C 00-I |
 | **translation unit** | One `.c` file after the preprocessor has handled its `#include`s; the unit the compiler works on. | C 01-D |
-| **two's complement** | How CPUs store negative integers: flip all bits and add 1. | C 04 |
+| **two's complement** | How CPUs store negative integers: flip all bits and add 1. | C 05 |
 | **undefined behavior (UB)** | Code the C standard gives no meaning to (e.g. out-of-bounds access, signed overflow). Anything can happen, including "seems to work". | C 00-B |
 | **use-after-free** | Using heap memory after it was freed. | C 02 |
 | **warning** | A compiler message about likely mistakes. The program still builds, but you should treat it as a bug. | Setup |

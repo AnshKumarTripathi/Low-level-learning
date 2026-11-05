@@ -1,6 +1,6 @@
 # 02 — Tooling & Build Discipline (C)
 
-[← 01 — Mental model](../01-low-level-mental-model/tasks.md) · [Roadmap](../../ROADMAP.md) · [Next: 02b — C language II →](../02b-c-language-ii/tasks.md) · [C++ twin: c_plus/01](../../c_plus/01-tooling-build/tasks.md)
+[← 01 — Mental model](../01-low-level-mental-model/tasks.md) · [Roadmap](../../ROADMAP.md) · [Next: 03 — C language II →](../03-c-language-ii/tasks.md) · [C++ twin: c_plus/01](../../c_plus/01-tooling-build/tasks.md)
 
 ## Objectives
 - Make builds repeatable and strict (warnings, debug/release).

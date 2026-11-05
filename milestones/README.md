@@ -7,11 +7,11 @@ Milestones are larger projects that combine several chapters. Each one has a fix
 | # | Project | Do it after | Uses | Time |
 |---|---------|-------------|------|------|
 | M0 | Student roster | C 00 | Modules A–I | (Module J — the chapter 00 gate) |
-| M1 | `strlib` — a safe string library | C 03 | C 02b, C 03 | 8–12 h |
-| M2 | `hashmap` — a reusable hash map | C 04b | C 03, C 04, C 04b | 12–16 h |
-| M3 | `minish` — a mini shell | C 06 | C 02b, C 06 | 12–16 h |
-| M4 | `kvserver` — a threaded key-value server | C 08 | M2, C 05, C 07, C 08 | 20–30 h |
-| M5 | `mymalloc` — your own allocator under M2 | C 09 | M2, C 09, C 10b | 15–20 h |
+| M1 | `strlib` — a safe string library | C 04 | C 03, C 04 | 8–12 h |
+| M2 | `hashmap` — a reusable hash map | C 06 | C 04, C 05, C 06 | 12–16 h |
+| M3 | `minish` — a mini shell | C 08 | C 03, C 08 | 12–16 h |
+| M4 | `kvserver` — a threaded key-value server | C 10 | M2, C 07, C 09, C 10 | 20–30 h |
+| M5 | `mymalloc` — your own allocator under M2 | C 11 | M2, C 11, C 13 | 15–20 h |
 | C++ M1 | Rewrite M0 and M2 in modern C++ | Bridge B4 | B1–B5 | 10–15 h |
 
 **Grading.** Each criterion scores 0 (missing), 1 (partly) or 2 (fully). A milestone passes at **80% of the maximum** with no 0 in the "must" rows. Grade yourself honestly, or swap with another learner.
@@ -49,13 +49,13 @@ size_t str_split(char *s, char sep, char **parts, size_t max_parts);   /* in pla
 | Header documents ownership and limits | | each function has a one-line contract comment |
 | No warnings with `-Werror` | must | builds clean |
 
-**Stretch:** a `str_builder` type that grows with `realloc` (C 03) and an `sb_printf` using `vsnprintf` (C 02b §6).
+**Stretch:** a `str_builder` type that grows with `realloc` (C 04) and an `sb_printf` using `vsnprintf` (C 03 §6).
 
 ---
 
 ## M2 — `hashmap`: a reusable hash map
 
-**Goal:** turn C 04b Exercise 2 into a library other milestones can use.
+**Goal:** turn C 06 Exercise 2 into a library other milestones can use.
 
 **Interface** (`hashmap.h`): `hm_init`, `hm_free`, `hm_put(map, key, value)`, `hm_get(map, key, int *out)`, `hm_remove`, `hm_count`, and an iterator `hm_next(map, size_t *cursor, const char **key, int *value)` that visits every entry once.
 
@@ -72,15 +72,15 @@ size_t str_split(char *s, char sep, char **parts, size_t max_parts);   /* in pla
 | No leaks or memory errors | must | ASan/Valgrind clean on Linux/WSL |
 | Growth works | must | correct results while growing from 8 to over 1,000,000 entries |
 | Iterator visits every entry exactly once | | proven by a test |
-| Performance measured | | ops/second for put and get, using the C 10b harness |
+| Performance measured | | ops/second for put and get, using the C 13 harness |
 
 ---
 
 ## M3 — `minish`: a mini shell
 
-**Goal:** an interactive shell that runs programs (C 13 Option C is the bigger version of this).
+**Goal:** an interactive shell that runs programs (C 16 Option C is the bigger version of this).
 
-**Features:** a prompt; run a program with arguments (C 06 `run_and_wait`); `"quoted arguments"`; built-ins `cd`, `pwd`, `exit [code]`, dispatched through a function-pointer table (C 02b §5); print `exit_code=<n>` after each external command; a `--script file` mode that runs commands from a file without a prompt.
+**Features:** a prompt; run a program with arguments (C 08 `run_and_wait`); `"quoted arguments"`; built-ins `cd`, `pwd`, `exit [code]`, dispatched through a function-pointer table (C 03 §5); print `exit_code=<n>` after each external command; a `--script file` mode that runs commands from a file without a prompt.
 
 **Test plan:** a script file covering: empty lines, unknown program, quoted argument with spaces, `cd` to a missing folder, `exit 3` (the shell's own exit code must be 3).
 
@@ -100,9 +100,9 @@ size_t str_split(char *s, char sep, char **parts, size_t max_parts);   /* in pla
 
 **Goal:** a TCP server that stores string keys and integer values for many clients at once.
 
-**Protocol:** length-prefixed frames (C 07 Exercise 3). Each request is one frame whose payload is a text command: `SET key value`, `GET key`, `DEL key`, `COUNT`. Each response is one frame: `OK`, `VALUE <n>`, `NOT_FOUND`, or `ERROR <reason>`.
+**Protocol:** length-prefixed frames (C 09 Exercise 3). Each request is one frame whose payload is a text command: `SET key value`, `GET key`, `DEL key`, `COUNT`. Each response is one frame: `OK`, `VALUE <n>`, `NOT_FOUND`, or `ERROR <reason>`.
 
-**Design:** one thread per client, or a fixed pool of worker threads fed by the C 08 bounded queue; one M2 hash map protected by a mutex.
+**Design:** one thread per client, or a fixed pool of worker threads fed by the C 10 bounded queue; one M2 hash map protected by a mutex.
 
 **Test plan:**
 - A client tool that sends one command and prints the reply.
@@ -121,7 +121,7 @@ size_t str_split(char *s, char sep, char **parts, size_t max_parts);   /* in pla
 
 ## M5 — `mymalloc`: your own allocator under M2
 
-**Goal:** replace `malloc`/`free` inside M2 with your own free-list allocator (C 09 Exercise 2, extended).
+**Goal:** replace `malloc`/`free` inside M2 with your own free-list allocator (C 11 Exercise 2, extended).
 
 **Features:** `my_malloc`, `my_free`, `my_realloc` on top of one large region; 16-byte alignment; first-fit search; splitting and coalescing; a `my_check()` that verifies every invariant; statistics (`in_use`, `free`, `largest_free_block`, `fragmentation = 1 − largest_free / total_free`).
 

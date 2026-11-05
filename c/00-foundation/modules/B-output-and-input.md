@@ -29,6 +29,8 @@ scanf("%d", &n);   /* correct */
 
 `scanf` must know **where to write** in memory. It needs the **address** of `n`, not the current value of `n`.
 
+> **Coming from Python?** `input()` always gives you a string that you convert; `scanf` converts while reading and can fail half-way, so always check how many values it read. An f-string checks its values' types; `printf` does **not** — a `%d` given a `double` is undefined behavior. Compile with `-Wall` and the compiler checks the format for you.
+
 ---
 
 ## Why it matters (low-level view)
@@ -82,7 +84,7 @@ fgets(user, sizeof user, stdin);
 printf(user);   /* DANGEROUS if user contains %n, %s, etc. */
 ```
 
-If `user` contains `"%x %x %x"`, `printf` may read from the stack and **leak memory** (format-string vulnerability — revisited in chapter 11).
+If `user` contains `"%x %x %x"`, `printf` may read from the stack and **leak memory** (format-string vulnerability — revisited in chapter 14).
 
 **Safe habit**:
 
@@ -177,6 +179,60 @@ Output of the worked example for input `3 5`: `a=3` then `b=5`.
 **Desired output** (for input `9.5 3`):
 - `price=9.50`
 - `qty=3`
+
+---
+
+## Fix the bug
+
+This program should read a name and an age and print `Ada is 36`. It has **two** bugs from this module's case studies:
+
+```c
+#include <stdio.h>
+
+int main(void)
+{
+    int age;
+    char name[32];
+    if (scanf("%31s %d", name, age) != 2) {
+        return 1;
+    }
+    printf(name);
+    printf(" is %d\n", age);
+    return 0;
+}
+```
+
+1. Compile with `gcc -std=c17 -Wall -Wextra -Wformat-security`. GCC 13 reports:
+   - `format '%d' expects argument of type 'int *', but argument 3 has type 'int'`
+   - `format not a string literal and no format arguments`
+2. Explain each warning in one sentence, then fix both.
+3. Test with `Ada 36`, and with the name `%x%x%x` — the fixed program must print it literally.
+
+## Checkpoint quiz
+
+1. Which marker prints a `double` with `printf`? Which reads one with `scanf`?
+2. Why does `scanf` need `&n` but `printf` takes plain `n`?
+3. What does `scanf` return, and what should you do with it?
+4. Why is `printf(user_input)` dangerous?
+5. What does `%5d` do?
+
+## Recap
+
+- `printf` reads values; `scanf` needs addresses to write into.
+- Always check `scanf`'s return value.
+- The format string is code: never let user input be the format.
+- `-Wall` checks `printf`/`scanf` formats against their arguments.
+
+## Spaced review
+
+1. (Module A) Which exit code should a program return when its input is invalid?
+2. (Module A) Where should the error message go?
+
+## Answers
+
+Quiz: 1. `%f` to print; `%lf` to read. 2. `scanf` must store a value, so it needs the location; `printf` only needs the value. 3. The number of values it read; compare it with the number you expected and handle failure. 4. `%` sequences in the input make `printf` read (or with `%n`, write) memory it was never given. 5. Prints the integer right-aligned in at least 5 characters.
+
+Spaced review: 1. A non-zero code, such as `1`. 2. stderr.
 
 **References (concept-only)**:
 - King — formatted I/O

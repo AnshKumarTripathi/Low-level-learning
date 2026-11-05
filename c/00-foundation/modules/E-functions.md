@@ -26,6 +26,25 @@ int main(void)
 
 **Local variables** exist only while the function runs. When the function returns, its stack frame is torn down — those locals are **gone**.
 
+Each call gets its own block of memory, a **stack frame**, on top of the caller's:
+
+```text
+ while add(2, 3) runs:                       after add returns:
+
+ ┌───────────────────────┐                   ┌───────────────────────┐
+ │ main's frame          │                   │ main's frame          │
+ │   s = (not set yet)   │                   │   s = 5               │
+ ├───────────────────────┤                   └───────────────────────┘ ◄── top of stack
+ │ add's frame           │                     add's frame is gone; the next
+ │   x = 2   y = 3       │                     call will reuse that memory
+ │   return address ─────┼──► where to continue in main
+ └───────────────────────┘ ◄── top of stack
+```
+
+`x` and `y` are **copies** of the arguments `2` and `3`. Changing `x` inside `add` can never change anything in `main`.
+
+> **Coming from Python?** Every parameter and return value has a declared type. A function must be declared before it is called (see the prototype below). Plain values like `int` are always copied into the function — there is no way for `add` to reach `main`'s variables unless `main` passes their addresses (Module H).
+
 C reads your file top to bottom, so it must know a function's name and types **before** the first call. Either define the function above `main`, or put a one-line **prototype** above `main` and the full definition below:
 
 ```c
@@ -175,6 +194,62 @@ Output of the worked example for `5`: `sum=15`.
 - for `1`: `primes=` then `count=0`
 
 Hint: print the space *before* every prime except the first, so the line does not end with a space.
+
+---
+
+## Fix the bug
+
+`sign` should return `1`, `-1` or `0`. On GCC 13 (Windows, `-O0`) this program printed `1 -1 1` — `sign(0)` returned garbage:
+
+```c
+#include <stdio.h>
+
+int sign(int x)
+{
+    if (x > 0) {
+        return 1;
+    }
+    if (x < 0) {
+        return -1;
+    }
+}
+
+int main(void)
+{
+    printf("%d %d %d\n", sign(5), sign(-5), sign(0));
+    return 0;
+}
+```
+
+1. Compile with `-Wall`. GCC says `control reaches end of non-void function`. What does that mean for `sign(0)`?
+2. Why is the output for `sign(0)` not guaranteed to be anything in particular?
+3. Fix it so the output is `1 -1 0`.
+
+## Checkpoint quiz
+
+1. What is a prototype, and when do you need one?
+2. Can a function change a plain `int` variable of its caller? Why?
+3. What happens to a function's local variables when it returns?
+4. What does `-Wall` report when a non-`void` function can end without `return`?
+5. Why is returning `&local` a bug?
+
+## Recap
+
+- Functions take typed parameters and return a typed value; declare them before use.
+- Each call gets its own stack frame; arguments are copies.
+- Locals die when the function returns — never return their address.
+- Every path through a non-`void` function must `return` a value.
+
+## Spaced review
+
+1. (Module D) How many times does `for (int i = 1; i <= n; i++)` run?
+2. (Module C) What type does `sizeof` return?
+
+## Answers
+
+Quiz: 1. A declaration (`int twice(int n);`) that tells the compiler a function's name and types; needed when the call comes before the definition in the file. 2. No — it receives a copy. 3. They cease to exist; their memory is reused. 4. `control reaches end of non-void function`. 5. The variable dies when the function returns, so the pointer dangles.
+
+Spaced review: 1. `n` times (for `n >= 1`). 2. `size_t`.
 
 **References (concept-only)**:
 - King — functions

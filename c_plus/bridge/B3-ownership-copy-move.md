@@ -235,7 +235,7 @@ Hints: the parent pointer must be a plain pointer or `weak_ptr` — a `shared_pt
 ## Spaced review
 
 1. (B2) When does a destructor run?
-2. (C 03) What goes wrong if two owners free the same block?
+2. (C 04) What goes wrong if two owners free the same block?
 3. (B1) Why is passing a big object by `const&` cheaper than by value?
 
 ## Answers

@@ -10,16 +10,17 @@ Each chapter folder contains a `tasks.md` file that teaches the chapter's topic 
 
 **Chapter shapes:** `c/00-foundation` uses **Learn → Why it matters → Case study → Try → Exercise**, one file per module under `c/00-foundation/modules/`; `c/01-low-level-mental-model` uses **Learn → Try → Exercise**. Chapters `c/02` onward have objectives, a **Learn** section, exercises with **hints**, a **checkpoint quiz** with answers, a recap and a spaced review.
 
-**Solutions:** tested solutions with design notes are in [`solutions/`](solutions/README.md): every exercise of `c/00` and `c/01`, one core exercise per chapter for `c/02`–`c/12`, and one per C++ bridge chapter. Attempt each exercise first.
+**Solutions:** tested solutions with design notes are in [`solutions/`](solutions/README.md): every exercise of the C track from `c/00` to `c/15` (open-ended performance and capstone work excepted), and one exercise per C++ bridge chapter. Attempt each exercise first.
 
-**C++ track note:** `c_plus/` is numbered `00`…`12`. It has no separate low-level mental-model chapter, so from tooling onward each `c_plus/` chapter is one number lower than the `c/` chapter on the same topic (for example `c/02-tooling-build` matches `c_plus/01-tooling-build`).
+**C++ track note:** `c_plus/` keeps its own numbering (`00`…`12`), so the numbers do not match the `c/` track. Match chapters by topic name (for example `c/02-tooling-build` matches `c_plus/01-tooling-build`). Each `c/` chapter that has a C++ twin links to it at the top.
 
-**Track order:** do `c/` chapters 00–04 first. Then work through the **[C++ bridge](c_plus/bridge/README.md)** (B1–B8: from C to modern C++) before the `c_plus/` exercise chapters. C chapters 05 onward can run in parallel with the bridge.
+**Track order:** do `c/` chapters 00–05 first. Then work through the **[C++ bridge](c_plus/bridge/README.md)** (B1–B8: from C to modern C++) before the `c_plus/` exercise chapters. C chapters 07 onward can run in parallel with the bridge.
 
 ## How to use this repo
 
 - **Start here:** [Setup & getting unstuck](00-setup/README.md) — install a compiler, learn the terminal basics, and read your first errors.
 - Unknown word? Check the [Glossary](GLOSSARY.md).
+- What is finished and what is still being written: [STATUS.md](STATUS.md).
 - **Do chapters in order**. Later chapters assume earlier skills (debugging, parsing discipline, I/O).
 - For each exercise:
   - Write down a tiny spec (inputs/outputs and edge cases).
@@ -47,7 +48,7 @@ The C and C++ tracks share the **same goal**, but the prompts are **adapted** so
 
 ## Chapters (what you will build)
 
-Numbering below matches the **`c/`** track (`00`…`13`, plus `02b`, `04b` and `10b`, which were added between existing chapters). For `c_plus/`, subtract one from chapter 02 onward (see the C++ track note above); the `b` chapters have no C++ twin.
+Numbering below is the **`c/`** track (`00`…`16`, one straight path). `c_plus/` chapters are matched by topic, not number (see the C++ track note above); chapters 03, 06 and 13 have no C++ twin.
 
 **Milestone projects** M1–M5 sit between chapters and combine several of them: see [milestones/](milestones/README.md).
 
@@ -60,46 +61,46 @@ You will build a CS:APP-style picture of the machine: bits/bytes/hex, addresses,
 ### 02) Tooling & Build Discipline
 You will set up repeatable builds, basic debugging, and runtime checking tools so every later chapter is faster.
 
-### 02b) C Language II
+### 03) C Language II
 You will learn the rest of everyday C: `const` pointers, `enum`/`union`/`typedef`, `static`/`extern`, macros, function pointers, variadic functions and robust number parsing.
 
-### 03) Memory, Pointers, Lifetimes
+### 04) Memory, Pointers, Lifetimes
 You will build small containers and learn to reason about stack/heap, alignment, UB, and lifetime boundaries. Then build milestone **M1** (`strlib`).
 
-### 04) Data Representation & Bitwise Thinking
+### 05) Data Representation & Bitwise Thinking
 You will implement byte/bit-level utilities and learn endianness and integer edge cases.
 
-### 04b) Data Structures
+### 06) Data Structures
 You will implement a linked list, a hash map, a binary heap and a binary search tree, with Big-O analysis and tests. Then build milestone **M2** (`hashmap`).
 
-### 05) Binary Files & Parsing
+### 07) Binary Files & Parsing
 You will parse structured bytes safely (lengths, bounds, offsets) and build a small hexdump-like tool.
 
-### 06) OS I/O, Files, Processes
+### 08) OS I/O, Files, Processes
 You will implement file and process utilities and learn the OS boundary (handles, descriptors, exit codes). Then build milestone **M3** (`minish`).
 
-### 07) Networking: Sockets & Protocols
+### 09) Networking: Sockets & Protocols
 You will implement TCP/UDP programs and a tiny framed protocol with robust parsing.
 
-### 08) Concurrency & Synchronization
+### 10) Concurrency & Synchronization
 You will build a work queue and learn to avoid races, deadlocks, and shared-state pitfalls. Then build milestone **M4** (`kvserver`).
 
-### 09) Memory Tooling & Allocators
+### 11) Memory Tooling & Allocators
 You will implement a tiny allocator and a leak tracker-style tool to understand real-world memory behavior. Then build milestone **M5** (`mymalloc`).
 
-### 10) Debugging & Reverse Basics
+### 12) Debugging & Reverse Basics
 You will learn how binaries look (symbols, stack frames) and how to inspect behavior with debugger and disassembly.
 
-### 10b) Performance
+### 13) Performance
 You will measure code correctly, see the memory hierarchy at work (cache lines, locality, data layout), and profile before optimising.
 
-### 11) CTF / Pwn Lab (Local-only)
+### 14) CTF / Pwn Lab (Local-only)
 You will build intentionally vulnerable programs and then harden them, learning exploit classes and mitigations.
 
-### 12) Serialization & Integrity
+### 15) Serialization & Integrity
 You will design message formats and add integrity checks (checksums/hashes), focusing on correctness and robustness.
 
-### 13) Capstone
+### 16) Capstone
 You will pick one larger project that ties together parsing + I/O + debugging + performance discipline.
 
 ## Book guides (C early path, concept-only)

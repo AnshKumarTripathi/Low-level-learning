@@ -2,7 +2,7 @@
 
 [← B1 — From C to C++](B1-c-to-cpp.md) · [Bridge index](README.md) · [Next: B3 — Ownership →](B3-ownership-copy-move.md)
 
-> Time: about 8–10 hours · Prerequisites: B1, C 03 (ownership) · You will build: a class with an invariant, an RAII file wrapper, and a scope-tracing experiment.
+> Time: about 8–10 hours · Prerequisites: B1, C 04 (ownership) · You will build: a class with an invariant, an RAII file wrapper, and a scope-tracing experiment.
 
 ## Learning objectives
 
@@ -226,8 +226,8 @@ Hints: only for learning — normally you would use `std::vector<unsigned char>`
 ## Spaced review
 
 1. (B1) How do you pass a large object you only read?
-2. (C 06) What must you always check after `fopen`?
-3. (C 03) Why is a double free dangerous?
+2. (C 08) What must you always check after `fopen`?
+3. (C 04) Why is a double free dangerous?
 
 ## Answers
 

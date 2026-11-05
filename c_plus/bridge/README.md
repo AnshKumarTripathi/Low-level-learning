@@ -4,7 +4,7 @@
 
 The C++ exercise chapters (`c_plus/00` … `c_plus/12`) assume you can already write C++. This bridge teaches it, starting from the C you learned in `c/00`–`c/04`.
 
-**Prerequisites:** C chapters 00–04 (including the Module J boss challenge). Chapters C 05 onward can be done in parallel with the bridge.
+**Prerequisites:** C chapters 00–05 (including the Module J boss challenge). Chapters C 07 onward can be done in parallel with the bridge.
 
 **Compiler:** `g++ -std=c++20 -Wall -Wextra -g file.cpp -o prog` (B7's `std::expected` example needs `-std=c++23`). Every runnable example in the bridge was compiled with GCC 13 and run, and its printed output is copied from that run.
 

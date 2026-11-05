@@ -21,6 +21,8 @@ A minimal C program needs:
 
 **Compile** turns your `.c` text into a runnable program. **Run** executes that program. (Deeper toolchain detail comes in chapter 01.)
 
+> **Coming from Python?** There is no interpreter running your source. You compile once to get an executable, then run that file; editing `hello.c` changes nothing until you compile again. Execution starts at `main`, not at the top of the file, and every statement ends with `;`.
+
 ---
 
 ## Why it matters (low-level view)
@@ -184,6 +186,59 @@ int main(int argc, char *argv[])
 - `./prog --help` → `usage: prog [--help | --fail]`, exit `0`
 - `./prog --fail` → `error: forced failure` on stderr, exit `2`
 - `./prog --oops` → `error: unknown option` on stderr, exit `2`
+
+---
+
+## Fix the bug
+
+This program should **fail** (exit code `1`, message on stderr) unless the first argument is `secret`. It compiles without a single warning, yet a script that checks its exit code would let anyone in:
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+int main(int argc, char *argv[])
+{
+    if (argc < 2 || strcmp(argv[1], "secret") != 0) {
+        printf("wrong password\n");
+        return 0;
+    }
+    printf("welcome\n");
+    return 0;
+}
+```
+
+1. Run it as `./check wrong` and print the exit code (`echo $?` / `echo $LASTEXITCODE`). What do you see?
+2. Fix it so a wrong password prints to **stderr** and exits `1`.
+3. Prove the fix: `./check wrong` → exit `1`; `./check secret` → `welcome`, exit `0`.
+
+Lesson: the compiler cannot know what your exit codes *mean*. Only testing the failure path finds this bug.
+
+## Checkpoint quiz
+
+1. What does `#include <stdio.h>` give your program?
+2. Where does a C program start running?
+3. Which exit code means success?
+4. How do you see the last exit code in PowerShell? In a Linux/macOS shell?
+5. Why do error messages go to stderr instead of stdout?
+
+## Recap
+
+- A C program is a text file compiled into an executable; recompile after every change.
+- Execution starts at `main`; `return 0` means success, anything else means failure.
+- Exit codes are a contract with scripts and other programs.
+- Errors go to stderr with `fprintf(stderr, ...)`.
+
+## Spaced review
+
+1. (Setup) What do `-Wall -Wextra` add to a compile command?
+2. (Setup) A compile prints five errors. Which one do you fix first?
+
+## Answers
+
+Quiz: 1. Declarations of the standard input/output functions, such as `printf`. 2. At `main`. 3. `0`. 4. `echo $LASTEXITCODE`; `echo $?`. 5. So normal output can be piped or saved separately, and errors are still seen even when stdout is redirected.
+
+Spaced review: 1. Warnings about likely mistakes. 2. The first one — later errors are often caused by it.
 
 **References (concept-only)**:
 - King — Ch. 2 / Head First C — getting started

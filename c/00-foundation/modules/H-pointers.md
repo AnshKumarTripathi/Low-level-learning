@@ -21,6 +21,24 @@ printf("*p=%d\n", *p);
 *p = 99;   /* changes x */
 ```
 
+As boxes and arrows (addresses are made up):
+
+```text
+int x = 10;                 int *p = &x;
+
+     x  (address 2000)            p  (address 2008)
+   ┌────────────┐               ┌────────────┐
+   │     10     │ ◄──────────── │    2000    │
+   └────────────┘               └────────────┘
+
+   p        is 2000                  (the address)
+   *p       is the int at 2000 = 10  (follow the arrow)
+   *p = 99  writes 99 into x's box
+   &p       is 2008                  (p is a variable too)
+```
+
+> **Coming from Python?** In Python every name already refers to an object and you never see addresses. In C you choose: pass a **copy** of a value, or pass its **address** so the function can change the original. A pointer can also be `NULL` or point to memory that no longer exists — Python makes that impossible; in C, checking is your job.
+
 **Array decay**: when you use an array's name in an expression, it turns into ("decays to") a pointer to its first element — `nums` becomes `&nums[0]`. There are only a few exceptions: `sizeof nums` (gives the whole array's size), `&nums` (address of the whole array), and initializing a `char` array from a string literal. Because of decay, a function never receives a whole array — only a pointer (see Module F, "Passing arrays to functions").
 
 **`NULL`** is a special pointer value meaning "points to nothing". Use it to mark "no address yet", and check for it before you dereference:
@@ -211,6 +229,62 @@ Output of the worked example for `2` then `10 20`: `v=10`, `v=20`.
 
 **Desired output** (for `5` then `4 9 2 9 1`):
 - `max=9 index=1`
+
+---
+
+## Fix the bug
+
+`order` should put its two arguments in increasing order. It compiles without warnings and prints `x=9 y=4`:
+
+```c
+#include <stdio.h>
+
+void order(int a, int b)
+{
+    if (a > b) {
+        int t = a;
+        a = b;
+        b = t;
+    }
+}
+
+int main(void)
+{
+    int x = 9, y = 4;
+    order(x, y);
+    printf("x=%d y=%d\n", x, y);
+    return 0;
+}
+```
+
+1. Draw the boxes for `main` and `order` (as in the diagram above). Which boxes does the swap change?
+2. Fix it with pointers, so the program prints `x=4 y=9`. What must change at the call site?
+
+## Checkpoint quiz
+
+1. If `p` holds the address of `x`, what are `p`, `*p` and `&p`?
+2. Why does `swap(int a, int b)` not work, and `swap(int *a, int *b)` does?
+3. What should you check before dereferencing a pointer that might not point anywhere?
+4. `int arr[4]; int *p = arr;` — what is `*(p + 2)`?
+5. Name the two exceptions where an array name does **not** decay to a pointer.
+
+## Recap
+
+- A pointer holds an address; `*p` follows it; `&x` takes one.
+- Passing an address lets a function change the caller's variable.
+- `NULL` means "points nowhere"; check before using a pointer that may be `NULL`.
+- Pointer arithmetic moves in whole elements and is unchecked, like array indexing.
+
+## Spaced review
+
+1. (Module E) What happens to `x` and `y` in `add`'s frame when `add` returns?
+2. (Module G) How many bytes does `"hello"` need?
+
+## Answers
+
+Quiz: 1. `p` is the address of `x`; `*p` is the value of `x`; `&p` is the address of `p` itself. 2. The first receives copies, so only the copies are swapped; the second receives addresses and writes through them. 3. That it is not `NULL`. 4. `arr[2]`. 5. `sizeof arr` and `&arr` (and initialising a `char` array from a string literal).
+
+Spaced review: 1. They cease to exist; the memory is reused. 2. 6.
 
 **References (concept-only)**:
 - Pointers on C — pointer basics / King — pointers
