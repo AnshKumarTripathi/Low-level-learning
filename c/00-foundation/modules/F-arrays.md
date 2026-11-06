@@ -17,6 +17,24 @@ nums[1] = 20;
 
 Valid indices for `int nums[5]` are `0` through `4` only.
 
+The elements sit next to each other in memory (addresses here are made up; each `int` is 4 bytes):
+
+```text
+int nums[5] = {10, 20, 30, 40, 50};
+
+address:  1000    1004    1008    1012    1016    1020
+         ┌───────┬───────┬───────┬───────┬───────┐┌─────────────────┐
+         │  10   │  20   │  30   │  40   │  50   ││ something else  │
+         └───────┴───────┴───────┴───────┴───────┘└─────────────────┘
+index:      0       1       2       3       4      ▲ nums[5] would be here
+
+address of nums[i] = address of nums + i * sizeof(int)
+```
+
+C computes that address and reads or writes it — it never checks that `i` is inside the array.
+
+> **Coming from Python?** A C array is not a list: its size is fixed when it is created, it cannot grow, it has no `len()`, and an index outside it is **not** an `IndexError` — it silently reads or overwrites other memory. Keep the length in a variable and check every index yourself.
+
 Initialization:
 
 ```c
@@ -61,7 +79,7 @@ Writing to `a[i]` inside the function changes the caller's array.
 
 An array is a **contiguous block of memory**. The compiler does not check bounds at runtime in plain C. `nums[5]` on a 5-element array is **out of bounds** — you read or write memory that belongs to something else (other locals, saved frame pointer, return address).
 
-This is the core of **stack buffer overflows**: write past the end of a buffer on the stack → overwrite control data → hijack execution (chapter 11).
+This is the core of **stack buffer overflows**: write past the end of a buffer on the stack → overwrite control data → hijack execution (chapter 14).
 
 **Habit**: every index `i` must satisfy `0 <= i < length`. Loops should use `i < n`, not `i <= n`, unless you have a deliberate reason.
 
@@ -214,6 +232,84 @@ Print the average with 2 decimals and the count above it.
 **Desired output** (for `5` then `2 4 6 8 10`):
 - `avg=6.00`
 - `above=2`
+
+---
+
+## Mini-project — ASCII bar chart
+
+Turn a list of numbers into a picture.
+
+**Spec**
+- Read `n` (`1`–`20`), then `n` values (`0`–`50`). Anything out of range → exit `1`.
+- For each value, print its position (width 2), ` |`, one `#` per unit, then a space and the value.
+- Finally print `best=` and the position of the largest value (the first one if there is a tie).
+
+**Example run** (input `4`, then `3 7 0 5`):
+
+```text
+ 1 |### 3
+ 2 |####### 7
+ 3 | 0
+ 4 |##### 5
+best=2
+```
+
+**Make it yours**: chart your hours of sleep or cups of coffee for a week. Harder: draw the chart **vertically**. Loop over rows from the tallest value down to `1`, and for each column print `#` or a space.
+
+Reference: [`solutions/c/00-foundation/F-mini.c`](../../../solutions/c/00-foundation/F-mini.c)
+
+---
+
+## Fix the bug
+
+This should print `sum=15`. On GCC 13 at `-O0` it **does** print `sum=15` — and it is still wrong:
+
+```c
+#include <stdio.h>
+
+int main(void)
+{
+    int a[5] = {1, 2, 3, 4, 5};
+    int sum = 0;
+    for (int i = 0; i <= 5; i++) {
+        sum += a[i];
+    }
+    printf("sum=%d\n", sum);
+    return 0;
+}
+```
+
+1. Find the bug by reading: which element does the last loop step read?
+2. Prove it with tools:
+   - `gcc -std=c17 -Wall -O2` warns `iteration 5 invokes undefined behavior`.
+   - `gcc -std=c17 -g -fsanitize=bounds -fsanitize-undefined-trap-on-error` stops the program at the bad read (run it under gdb to see the line).
+3. Fix it, and explain why "it printed the right answer" proved nothing.
+
+## Checkpoint quiz
+
+1. What are the valid indices of `int a[8]`?
+2. How does C compute the address of `a[i]`?
+3. What does C do when you write `a[8] = 1` on that array?
+4. How do you get the number of elements of an array in the same function where it is declared?
+5. Why must a function that takes an array also take its length?
+
+## Recap
+
+- An array is a fixed number of same-type elements, next to each other in memory.
+- Valid indices are `0` to `length - 1`; C never checks.
+- Out-of-bounds access is undefined behavior: it may print the right answer, crash, or corrupt other data.
+- Pass arrays to functions together with their length.
+
+## Spaced review
+
+1. (Module E) Are function arguments copies or the caller's variables?
+2. (Module D) Which loop condition visits indices `0` to `n - 1`?
+
+## Answers
+
+Quiz: 1. `0` to `7`. 2. Base address + `i * sizeof(element)`. 3. Nothing stops it: it writes into whatever memory follows the array (undefined behavior). 4. `sizeof a / sizeof a[0]`. 5. Inside the function the array is only a pointer to its first element, so its size is unknown.
+
+Spaced review: 1. Copies (for plain values). 2. `i < n`.
 
 **References (concept-only)**:
 - King — arrays

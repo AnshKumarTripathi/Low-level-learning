@@ -8,6 +8,8 @@
 
 Programs **choose** or **repeat**.
 
+> **Coming from Python?** Blocks use `{ }`, not indentation (indent anyway, for humans). It is `else if`, not `elif`; `&&`, `||`, `!`, not `and`, `or`, `not`. The `for` loop has three parts — start; condition; step — instead of iterating over a sequence. `=` assigns and `==` compares, and writing `=` inside an `if` is legal C, so it is a classic bug.
+
 **`if` / `else`**:
 
 ```c
@@ -123,7 +125,7 @@ for (int i = 0; i <= 8; i++) {   /* BUG: should be i < 8 */
 }
 ```
 
-Valid indices for `buf[8]` are `0`–`7`. When `i == 8`, you write **one byte past the end**. That byte may land on adjacent stack data (saved return address, other locals). One byte is enough to start a corruption chain — chapter 11 explores this deliberately.
+Valid indices for `buf[8]` are `0`–`7`. When `i == 8`, you write **one byte past the end**. That byte may land on adjacent stack data (saved return address, other locals). One byte is enough to start a corruption chain — chapter 14 explores this deliberately.
 
 **Fix**: `i < 8` (or `i < sizeof buf` with care for types).
 
@@ -265,6 +267,90 @@ int main(void)
 - `pow 5 0` → `result=1`
 - `pow 2 -1` → `error: negative exponent`, exit `1`
 - `div 10 0` → `error: divide by zero`, exit `1`
+
+---
+
+## Mini-project — Guess the number
+
+A two-player game. Player 1 types a secret number; player 2 has 7 tries to guess it.
+
+**Spec**
+- Read the secret (`1`–`100`; anything else → exit `1`).
+- Then read guesses one at a time. After each, print `too low`, `too high`, or `correct! tries=N` and exit `0`.
+- After 7 wrong guesses print `out of tries, it was S` and exit `0`.
+- If `scanf` fails while reading a guess, exit `1`.
+
+**Example run** (input `42`, then `50 25 40 42`):
+
+```text
+too high
+too low
+too low
+correct! tries=4
+```
+
+**Why 7?** If you always guess the middle of what is left, each guess halves the range: 100 → 50 → 25 → 13 → 7 → 4 → 2 → 1. Seven guesses are always enough. This is **binary search**, which comes back in chapter 06.
+
+**Make it yours**: after player 1 types the secret, print 40 empty lines with a loop so player 2 cannot see it. Want the computer to pick the secret? Look up `rand()` and `srand(time(NULL))` from `<stdlib.h>` and `<time.h>`.
+
+Reference: [`solutions/c/00-foundation/D-mini.c`](../../../solutions/c/00-foundation/D-mini.c)
+
+---
+
+## Fix the bug
+
+This program should print `zero` for input `0`, and otherwise every even number from `0` up to **and including** `n` (for `6`: `0 2 4 6`). Instead it prints an empty line for every input:
+
+```c
+#include <stdio.h>
+
+int main(void)
+{
+    int n;
+    if (scanf("%d", &n) != 1) {
+        return 1;
+    }
+    if (n = 0) {
+        printf("zero\n");
+        return 0;
+    }
+    for (int i = 0; i < n; i += 2) {
+        printf("%d ", i);
+    }
+    printf("\n");
+    return 0;
+}
+```
+
+1. Compile with `-Wall`. GCC 13 says `suggest parentheses around assignment used as truth value`. What does `n = 0` do, and what is its value?
+2. Fix that bug, run with `6`, and find the second one.
+3. Final check: `0` → `zero`; `6` → `0 2 4 6`; `5` → `0 2 4`.
+
+## Checkpoint quiz
+
+1. What is the difference between `=` and `==`?
+2. How many times does `for (int i = 0; i < 5; i++)` run? And with `i <= 5`?
+3. What happens in a `switch` case without `break`?
+4. What does `!found` mean when `found` is `0`?
+5. Rewrite `i = i + 1` in two shorter ways.
+
+## Recap
+
+- `if`/`else if`/`else` choose; `while` and `for` repeat; `switch` picks among exact values.
+- `<` vs `<=` in a loop condition is the classic off-by-one; check the first and last value by hand.
+- `-Wall` catches `=` inside conditions and missing cases in `switch` on enums.
+- Combine conditions with `&&`, `||`, `!`.
+
+## Spaced review
+
+1. (Module C) What is `7 / 2` in C?
+2. (Module B) What must you check after every `scanf`?
+
+## Answers
+
+Quiz: 1. `=` stores a value; `==` compares two values. 2. 5 times; 6 times. 3. Execution falls through into the next case. 4. True (`!0` is `1`). 5. `i += 1` and `i++`.
+
+Spaced review: 1. `3`. 2. Its return value — the number of values it read.
 
 **References (concept-only)**:
 - King — selection and loops

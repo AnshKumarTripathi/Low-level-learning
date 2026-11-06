@@ -21,17 +21,15 @@ A minimal C program needs:
 
 **Compile** turns your `.c` text into a runnable program. **Run** executes that program. (Deeper toolchain detail comes in chapter 01.)
 
+> **Coming from Python?** There is no interpreter running your source. You compile once to get an executable, then run that file; editing `hello.c` changes nothing until you compile again. Execution starts at `main`, not at the top of the file, and every statement ends with `;`.
+
 ---
 
-## Why it matters (low-level view)
+## Why it matters
 
-When you run a program, the OS loads **machine code** into memory and starts at `main`. From that moment:
+When you run a program, the operating system starts it at `main`. When `main` returns, the number you return goes back to whoever started the program: `0` means success, anything else means failure. Scripts and build tools make decisions based on that number.
 
-- Your program has its **own memory** (stack, heap, globals, code).
-- A non-zero **exit code** tells the shell or caller something failed — scripts and build tools rely on this.
-- Anything you read from the user crosses a **trust boundary**: treat input as hostile by habit, even in toy programs.
-
-Low-level security work is mostly about **what your program does with bytes in memory** after `main` starts.
+You will look inside memory later. For now: **your program is a list of instructions, and the exit code is how it reports back.**
 
 ---
 
@@ -57,26 +55,23 @@ int main(void)
 
 ---
 
-## Case study: exit codes and silent failure
+## Case study: the exit code that lied
 
-A login helper that always returns `0` even when authentication fails:
+This program is meant to report a failed login:
 
 ```c
-/* fragment: not a complete program — add #include lines and main() to run it */
-/* BAD — caller thinks login succeeded */
-int check_password(const char *input)
+#include <stdio.h>
+
+int main(void)
 {
-    if (strcmp(input, "secret") != 0) {
-        printf("wrong password\n");
-        return 0;  /* should be non-zero */
-    }
-    return 0;
+    printf("wrong password\n");
+    return 0;   /* BUG: 0 means success */
 }
 ```
 
-A shell script running `if ./check; then grant_access; fi` would **grant access on failure**. Correct pattern: `return 1` (or another non-zero code) on failure, print errors to **stderr** when appropriate.
+It looks right on screen, but a script that asks "did it succeed?" gets **yes**, and could let the user in. The fix is `return 1;`.
 
-**Lesson**: `return 0` vs `return 1` is not cosmetic — it is part of your program’s contract with the OS and other programs.
+**Lesson**: `return 0` and `return 1` are not decoration. They are a promise to whoever runs your program.
 
 ---
 
@@ -184,6 +179,106 @@ int main(int argc, char *argv[])
 - `./prog --help` → `usage: prog [--help | --fail]`, exit `0`
 - `./prog --fail` → `error: forced failure` on stderr, exit `2`
 - `./prog --oops` → `error: unknown option` on stderr, exit `2`
+
+---
+
+## Mini-project — Robot poster
+
+Make the terminal draw something. You only need `printf`.
+
+**Spec**
+- Print a robot (or a cat, a rocket, anything) at least 5 lines tall, with one `printf` per line.
+- Under the picture, print its name and a catchphrase.
+- Exit with `0`.
+
+Two characters are special inside a string. To print a backslash, write `\\`. To print a double quote, write `\"`.
+
+**Example program**:
+
+```c
+#include <stdio.h>
+
+int main(void)
+{
+    printf("  [o_o]\n");
+    printf(" /|___|\\\n");
+    printf("  |   |\n");
+    printf("  |___|\n");
+    printf("  d   b\n");
+    printf("My name is \"Bolt\".\n");
+    printf("Beep boop!\n");
+    return 0;
+}
+```
+
+**Output**:
+
+```text
+  [o_o]
+ /|___|\
+  |   |
+  |___|
+  d   b
+My name is "Bolt".
+Beep boop!
+```
+
+**Make it yours**: replace the robot with your own drawing. Then remove one `\\` from the second line, compile with `-Wall`, and read what the compiler says.
+
+Reference: [`solutions/c/00-foundation/A-mini.c`](../../../solutions/c/00-foundation/A-mini.c)
+
+---
+
+## Fix the bug
+
+This program should **fail** (exit code `1`, message on stderr) unless the first argument is `secret`. It compiles without a single warning, yet a script that checks its exit code would let anyone in:
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+int main(int argc, char *argv[])
+{
+    if (argc < 2 || strcmp(argv[1], "secret") != 0) {
+        printf("wrong password\n");
+        return 0;
+    }
+    printf("welcome\n");
+    return 0;
+}
+```
+
+1. Run it as `./check wrong` and print the exit code (`echo $?` / `echo $LASTEXITCODE`). What do you see?
+2. Fix it so a wrong password prints to **stderr** and exits `1`.
+3. Prove the fix: `./check wrong` → exit `1`; `./check secret` → `welcome`, exit `0`.
+
+Lesson: the compiler cannot know what your exit codes *mean*. Only testing the failure path finds this bug.
+
+## Checkpoint quiz
+
+1. What does `#include <stdio.h>` give your program?
+2. Where does a C program start running?
+3. Which exit code means success?
+4. How do you see the last exit code in PowerShell? In a Linux/macOS shell?
+5. Why do error messages go to stderr instead of stdout?
+
+## Recap
+
+- A C program is a text file compiled into an executable; recompile after every change.
+- Execution starts at `main`; `return 0` means success, anything else means failure.
+- Exit codes are a contract with scripts and other programs.
+- Errors go to stderr with `fprintf(stderr, ...)`.
+
+## Spaced review
+
+1. (Setup) What do `-Wall -Wextra` add to a compile command?
+2. (Setup) A compile prints five errors. Which one do you fix first?
+
+## Answers
+
+Quiz: 1. Declarations of the standard input/output functions, such as `printf`. 2. At `main`. 3. `0`. 4. `echo $LASTEXITCODE`; `echo $?`. 5. So normal output can be piped or saved separately, and errors are still seen even when stdout is redirected.
+
+Spaced review: 1. Warnings about likely mistakes. 2. The first one — later errors are often caused by it.
 
 **References (concept-only)**:
 - King — Ch. 2 / Head First C — getting started

@@ -29,6 +29,8 @@ scanf("%d", &n);   /* correct */
 
 `scanf` must know **where to write** in memory. It needs the **address** of `n`, not the current value of `n`.
 
+> **Coming from Python?** `input()` always gives you a string that you convert; `scanf` converts while reading and can fail half-way, so always check how many values it read. An f-string checks its values' types; `printf` does **not** — a `%d` given a `double` is undefined behavior. Compile with `-Wall` and the compiler checks the format for you.
+
 ---
 
 ## Why it matters (low-level view)
@@ -41,7 +43,7 @@ If you pass `n` instead of `&n`, you pass a **number** (e.g. `7`), not a locatio
 
 ---
 
-## Case study 1: `scanf` without `&` — writing to the wrong place
+## Case study: `scanf` without `&` — writing to the wrong place
 
 ```c
 #include <stdio.h>
@@ -68,28 +70,6 @@ scanf("%d", &n);
 ```
 
 **Mental model**: `n` is the value in the box; `&n` is the **label on the box** where delivery should go.
-
----
-
-## Case study 2: format string misuse (preview)
-
-Never let untrusted input **be** the format string:
-
-```c
-/* fragment: not a complete program — add #include lines and main() to run it */
-char user[64];
-fgets(user, sizeof user, stdin);
-printf(user);   /* DANGEROUS if user contains %n, %s, etc. */
-```
-
-If `user` contains `"%x %x %x"`, `printf` may read from the stack and **leak memory** (format-string vulnerability — revisited in chapter 11).
-
-**Safe habit**:
-
-```c
-/* fragment: not a complete program — add #include lines and main() to run it */
-printf("%s", user);   /* user is data, not the format */
-```
 
 ---
 
@@ -177,6 +157,84 @@ Output of the worked example for input `3 5`: `a=3` then `b=5`.
 **Desired output** (for input `9.5 3`):
 - `price=9.50`
 - `qty=3`
+
+---
+
+## Mini-project — Number Mad Libs
+
+Time to build something silly. Your program asks for three numbers and turns them into a short story.
+
+**Spec**
+- Print a prompt, then read an `int` age, an `int` number of cats, and a `double` price.
+- If `scanf` does not read all three, print an error and exit `1`.
+- Print three story lines that use the numbers, including at least one calculation (for example `cats * price`).
+
+**Example run** (input `30 4 2.5`):
+
+```text
+age, number of cats, price of one cat: 
+At age 30, I adopted 4 cats.
+Each cat cost 2.50 coins, so the bill was 10.00 coins.
+By age 40 I will have 8 cats.
+```
+
+**Make it yours**: change the story completely — dragons, pizzas, spaceships. Add a fourth number. Swap `%.2f` for `%8.2f` and see the padding.
+
+Reference: [`solutions/c/00-foundation/B-mini.c`](../../../solutions/c/00-foundation/B-mini.c)
+
+---
+
+## Fix the bug
+
+This program should read a name and an age and print `Ada is 36`. It has **two** bugs from this module's case studies:
+
+```c
+#include <stdio.h>
+
+int main(void)
+{
+    int age;
+    char name[32];
+    if (scanf("%31s %d", name, age) != 2) {
+        return 1;
+    }
+    printf(name);
+    printf(" is %d\n", age);
+    return 0;
+}
+```
+
+1. Compile with `gcc -std=c17 -Wall -Wextra -Wformat-security`. GCC 13 reports:
+   - `format '%d' expects argument of type 'int *', but argument 3 has type 'int'`
+   - `format not a string literal and no format arguments`
+2. Explain each warning in one sentence, then fix both.
+3. Test with `Ada 36`, and with the name `%x%x%x` — the fixed program must print it literally.
+
+## Checkpoint quiz
+
+1. Which marker prints a `double` with `printf`? Which reads one with `scanf`?
+2. Why does `scanf` need `&n` but `printf` takes plain `n`?
+3. What does `scanf` return, and what should you do with it?
+4. Why is `printf(user_input)` dangerous?
+5. What does `%5d` do?
+
+## Recap
+
+- `printf` reads values; `scanf` needs addresses to write into.
+- Always check `scanf`'s return value.
+- The format string is code: never let user input be the format.
+- `-Wall` checks `printf`/`scanf` formats against their arguments.
+
+## Spaced review
+
+1. (Module A) Which exit code should a program return when its input is invalid?
+2. (Module A) Where should the error message go?
+
+## Answers
+
+Quiz: 1. `%f` to print; `%lf` to read. 2. `scanf` must store a value, so it needs the location; `printf` only needs the value. 3. The number of values it read; compare it with the number you expected and handle failure. 4. `%` sequences in the input make `printf` read (or with `%n`, write) memory it was never given. 5. Prints the integer right-aligned in at least 5 characters.
+
+Spaced review: 1. A non-zero code, such as `1`. 2. stderr.
 
 **References (concept-only)**:
 - King — formatted I/O

@@ -2,7 +2,7 @@
 
 [Bridge index](README.md) · [Roadmap](../../ROADMAP.md) · [Next: B2 — Classes and RAII →](B2-classes-raii.md)
 
-> Time: about 6–8 hours · Prerequisites: C 00–04 · You will build: small programs that use C++ strings, references and overloading, and a "translate this C program" exercise.
+> Time: about 6–8 hours · Prerequisites: C 00–05 · You will build: small programs that use C++ strings, references and overloading, and a "translate this C program" exercise.
 
 ## Learning objectives
 
@@ -212,7 +212,7 @@ Hints: `std::getline` reads a whole line into a `std::string` of any length, so 
 ## Spaced review
 
 1. (C 00-H) What does `*p` mean for a pointer `p`?
-2. (C 03) Who frees memory returned by `malloc`?
+2. (C 04) Who frees memory returned by `malloc`?
 3. (C 00-G) Why was `scanf("%s", buf)` dangerous? Why is `std::cin >> str` not?
 
 ## Answers

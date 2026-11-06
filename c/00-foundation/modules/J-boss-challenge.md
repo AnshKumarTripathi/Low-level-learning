@@ -286,6 +286,28 @@ Mark **pass** only if **all** are true:
 
 ---
 
+## Bonus game — Tic-tac-toe *(optional)*
+
+You passed the boss. Now play something. This is not part of the pass/fail test.
+
+**Spec**
+- Keep the board in `char board[9]`, starting as `'1'` to `'9'`. X moves first.
+- Print the board as three rows such as `X|2|3`, then a prompt line `X> ` or `O> `.
+- Read a cell number. A cell outside `1`–`9` or already taken prints `bad move`, and the same player tries again.
+- After each valid move, print the board. Three in a row prints `X wins` or `O wins` and exits `0`. A full board prints `draw` and exits `0`.
+- If `scanf` fails, print `error: expected a number` and exit `1`.
+- Write at least `print_board` and `has_won` as separate functions.
+
+**Hint**: there are only 8 winning lines. Store them in `int lines[8][3]` and loop, instead of writing 8 `if` statements.
+
+**Check**: moves `1 4 2 5 3` end with `X wins`. Moves `1 2 3 5 4 6 8 7 9` end with `draw`. Moves `1 1 2` print `bad move` once, then continue.
+
+**Make it yours**: add a computer player that takes a winning cell if one exists, then blocks yours, then takes the center.
+
+Reference: [`solutions/c/00-foundation/J-bonus-tictactoe.c`](../../../solutions/c/00-foundation/J-bonus-tictactoe.c)
+
+---
+
 ## References (concept-only)
 
 - Modules A–I in this chapter (case studies + exercises)

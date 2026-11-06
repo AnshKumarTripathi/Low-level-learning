@@ -218,7 +218,7 @@ Hints: `catch (...)` catches anything. Compile the C file with `gcc -c`, the C++
 
 1. (B2) What does RAII guarantee during an early return?
 2. (B3) Why does `std::vector` care whether your move constructor is `noexcept`?
-3. (C 06) How did C programs report errors from the OS?
+3. (C 08) How did C programs report errors from the OS?
 
 ## Answers
 

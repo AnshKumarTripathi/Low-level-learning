@@ -25,7 +25,7 @@ You built a dynamic array, a hash map and sorting by hand in C. Those were for u
 
 | Container | What it is | Access | Insert/erase | Use it for |
 |-----------|-----------|--------|--------------|-----------|
-| `std::vector<T>` | growable array (C 03 Exercise 1) | O(1) by index | O(1) at the end | **the default** |
+| `std::vector<T>` | growable array (C 04 Exercise 1) | O(1) by index | O(1) at the end | **the default** |
 | `std::array<T, N>` | fixed-size array, size known at compile time | O(1) | — | small fixed collections |
 | `std::string` | growable array of `char` | O(1) | O(1) at the end | text |
 | `std::deque<T>` | double-ended queue | O(1) | O(1) at both ends | queues |
@@ -235,9 +235,9 @@ Hints: `v.reserve(n)` guarantees no reallocation until the size reaches `n`; `er
 
 ## Spaced review
 
-1. (C 03) Why does doubling capacity make `push_back` fast on average?
+1. (C 04) Why does doubling capacity make `push_back` fast on average?
 2. (B3) Why does `std::vector` need a `noexcept` move constructor?
-3. (C 08) Why is a vector's contiguous memory good for performance?
+3. (C 10) Why is a vector's contiguous memory good for performance?
 
 ## Answers
 

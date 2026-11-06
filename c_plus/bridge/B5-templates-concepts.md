@@ -167,7 +167,7 @@ Write `swap_values`, `min_of` and `clamp_to` as function templates and test them
 Hints: this is the `c_plus/00-foundation` Exercise E1 — do it there, now with the theory behind it.
 
 ### Exercise B5.2 — Generic ring buffer *(medium)*
-Turn your C 08 queue (or a new one) into `template <typename T, std::size_t N> class RingBuffer` with `push`, `pop` (returning `std::optional<T>`), `size`, `full`, `empty`. Test it with `int` and `std::string`, including wrap-around.
+Turn your C 10 queue (or a new one) into `template <typename T, std::size_t N> class RingBuffer` with `push`, `pop` (returning `std::optional<T>`), `size`, `full`, `empty`. Test it with `int` and `std::string`, including wrap-around.
 
 Hints: indices go around with `% N`; keep `count` separately so that "full" and "empty" are not confused.
 
@@ -198,7 +198,7 @@ Hints: compare with B6, which solves "different shapes in one list" with virtual
 
 ## Spaced review
 
-1. (C 03) How did you write a generic container in C, and what could go wrong?
+1. (C 04) How did you write a generic container in C, and what could go wrong?
 2. (B4) Which algorithm finds the first element matching a condition?
 3. (B3) What does `std::move` do?
 

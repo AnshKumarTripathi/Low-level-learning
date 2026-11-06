@@ -1,5 +1,7 @@
 # 01 — Low-level Mental Model (C)
 
+[← 00 — Foundation](../00-foundation/tasks.md) · [Roadmap](../../ROADMAP.md) · [Next: 02 — Tooling →](../02-tooling-build/tasks.md)
+
 This chapter comes **after** absolute-beginner syntax (chapter 00). You already know variables, loops, functions, arrays, and gentle pointers. Here you build the **machine picture** that later systems chapters assume: bits, bytes, addresses, how C becomes a runnable program, and stack vs heap.
 
 Each subchapter uses **Learn → Try → Exercise**. Tested solutions with design notes: [`solutions/c/01-low-level-mental-model/`](../../solutions/c/01-low-level-mental-model/README.md) — attempt each exercise first.
@@ -11,6 +13,7 @@ Each subchapter uses **Learn → Try → Exercise**. Tested solutions with desig
 - Explain preprocess → compile → assemble → link at a practical level.
 - Allocate a tiny heap block with `malloc`/`free` and contrast it with a local variable.
 - Compare addresses of a global, a local, and a heap block.
+- Write a real image file (PPM) pixel by pixel, and see that an image is just bytes.
 
 ## Book guides (concept-only — not cover-to-cover)
 - **Computer Systems: A Programmer’s Perspective (CS:APP)** (Bryant & O’Hallaron) — Ch. 1 (computer system overview) and Ch. 2 (data representation) at a gentle depth.
@@ -349,7 +352,175 @@ Include `<stdint.h>` for `uintptr_t`. This is a curiosity check for your machine
 
 ---
 
+## Subchapter G — Pixels are just bytes (your first image)
+
+### Learn
+A picture on screen is a grid of **pixels**. Each pixel is three numbers: how much **red**, **green** and **blue** light, each from `0` to `255` — exactly one byte each. So a 256 × 256 image is 256 × 256 × 3 = 196,608 bytes. Nothing more.
+
+You already know colors in hex from web pages: `#FF8800` is red `0xFF` (255), green `0x88` (136), blue `0x00` (0). Each pair of hex digits is one byte (Subchapter A).
+
+The simplest image file format is **PPM** (Portable PixMap). Its text version, **P3**, is plain numbers:
+
+```text
+P3          ← magic word: "text PPM"
+3 2         ← width, height
+255         ← the largest value a color byte can have
+255 0 0     ← pixel (0,0): red
+0 255 0     ← pixel (1,0): green
+0 0 255     ← pixel (2,0): blue
+255 255 0   ← pixel (0,1): yellow
+255 255 255 ← pixel (1,1): white
+0 0 0       ← pixel (2,1): black
+```
+
+Pixels go row by row, left to right, top to bottom — the same order as a 2D array in memory (Module F).
+
+You do not need any file functions yet: print the image with `printf`, and let the shell **redirect** the output into a file with `>`.
+
+```c
+#include <stdio.h>
+
+int main(void)
+{
+    int w = 256, h = 256;
+    printf("P3\n%d %d\n255\n", w, h);
+    for (int y = 0; y < h; y++) {
+        for (int x = 0; x < w; x++) {
+            int r = x;          /* red grows to the right */
+            int g = y;          /* green grows downwards */
+            int b = 128;
+            printf("%d %d %d\n", r, g, b);
+        }
+    }
+    return 0;
+}
+```
+
+```text
+gcc -std=c17 -Wall -Wextra -g gradient.c -o gradient
+./gradient > gradient.ppm          (Windows PowerShell: .\gradient.exe > gradient.ppm)
+```
+
+**Opening a `.ppm` file**: macOS Preview and most Linux image viewers open it directly. On Windows use [GIMP](https://www.gimp.org/) or [IrfanView](https://www.irfanview.com/), or a "PPM viewer" extension in VS Code.
+
+> **Windows PowerShell 5.1 note**: `>` there may save the file as UTF-16, which viewers cannot read. If the image does not open, run the program from `cmd` (`gradient.exe > gradient.ppm`), from Git Bash, or in PowerShell use `.\gradient.exe | Out-File -Encoding ascii gradient.ppm`.
+
+This is how every image, video frame and game screen starts: bytes in memory, three per pixel. The [graphics track](../../ROADMAP.md) later turns this into lines, triangles, 3D and a ray tracer.
+
+### Try
+Run the gradient example and open the image. Then swap `r` and `b`, or set `b = (x + y) / 2`, and predict the colors before you look.
+
+### Exercise G1 — Three-stripe flag
+**Task**: Read a width and a height. Width must be `3`–`2000` and height `1`–`2000`; otherwise print an error to `stderr` and exit `1`. Print a P3 image with three **vertical** stripes of equal width:
+- `x < w / 3` → saffron `#FF9933`
+- `x < 2 * w / 3` → white `#FFFFFF`
+- otherwise → green `#138808`
+
+Print one pixel per line, as in the example.
+
+**Desired output** for input `3 1`:
+
+```text
+P3
+3 1
+255
+255 153 51
+255 255 255
+19 136 8
+```
+
+Run it with `300 200` and open the file. Then make your own country's flag (horizontal stripes compare `y` instead of `x`).
+
+### Exercise G2 — Checkerboard from hex colors
+**Task**: Read `size` (`1`–`2000`) and `cell` (`1` or more), then two colors written like `#FF8800 #000000`. Read each color with `scanf(" #%2x%2x%2x", &r, &g, &b)`: `%2x` reads exactly **two hex digits** — one byte — into an `unsigned int`. On bad input, print an error to `stderr` and exit `1`.
+
+Print a `size × size` checkerboard of `cell × cell` squares. The square at column `x / cell` and row `y / cell` uses the first color when `(x / cell + y / cell) % 2 == 0`, otherwise the second.
+
+**Desired output** for input `2 1 #FF8800 #000000`:
+
+```text
+P3
+2 2
+255
+255 136 0
+0 0 0
+0 0 0
+255 136 0
+```
+
+Try `400 50 #FFFFFF #222222` for a chessboard.
+
+### Exercise G3 — A circle in memory *(stretch)*
+**Task**: Keep the whole image in an array first, then write it out:
+
+```c
+/* fragment: not a complete program — add #include lines and main() to run it */
+#define W 64
+#define H 64
+static unsigned char img[H][W][3];   /* static: too big to be comfortable on the stack */
+```
+
+Read `cx cy r` (circle center and radius; `r` must not be negative). Fill every pixel: inside the circle when `dx * dx + dy * dy <= r * r` (with `dx = x - cx`, `dy = y - cy`) use red `230 40 40`, otherwise dark blue `20 20 60`. Then print the P3 image from the array.
+
+Finally, print to **stderr** (so the image file stays clean):
+- `bytes=` and `sizeof img`
+- if the center is inside the image: `offset formula=` and `(cy * W + cx) * 3`, then `offset address=` and `&img[cy][cx][0] - &img[0][0][0]`
+
+The last two numbers must be equal. For input `32 32 20`: `bytes=12288`, both offsets `6240`. A 2D image is one long row of bytes; `[y][x][c]` is just address arithmetic.
+
+**References (concept-only)**:
+- [Netpbm PPM format](https://netpbm.sourceforge.net/doc/ppm.html)
+- CS:APP — "information is bits + context": the same bytes are numbers, text or pixels depending on how you read them
+
+---
+
+## Hints (all exercises)
+
+1. A1, A2: `%x` prints hex and expects an `unsigned int`. For powers of two, start at `1` and double.
+2. B1: cast the address for `%p`: `(void *)&x`.
+3. C1, C2: point an `unsigned char *` at the variable and read its bytes one by one. On a little-endian machine, the lowest address holds the lowest byte.
+4. D1, D2: a link error means the definition is missing, so check that every `.c` or `.o` file is on the command.
+5. E1, E2, F1: check `malloc` for `NULL` right after the call, and `free` once before exiting.
+6. G1, G2: test with a tiny image first, such as `3 1`, and compare the numbers with the desired output before you open a big one.
+7. G3: if the circle looks wrong, print `dx`, `dy` and the test result for the center pixel.
+
+## Checkpoint quiz
+
+1. Convert `0x2F` to decimal and to binary.
+2. What does `%p` print, and why cast the pointer to `void *`?
+3. On a little-endian machine, which byte of `0xAABBCCDD` is stored at the lowest address?
+4. Name the four steps from a `.c` file to an executable.
+5. You get `undefined reference to 'add'`. Which step failed, and what is the usual cause?
+6. What does `gcc -c` produce?
+7. Where does a local variable live, and when does it disappear?
+8. What must you do right after every `malloc`?
+9. Why might a Windows machine print `obs=local_addr_le_heap` while the diagram suggests the opposite?
+10. What does `free` do, and why set the pointer to `NULL` afterwards?
+
+## Recap
+
+- Everything is bits; hex is a compact way to write bytes (4 bits per digit).
+- Every variable has a size (`sizeof`) and an address (`&`, printed with `%p`).
+- Multi-byte values are stored in an order: x86-64 is little-endian.
+- Build pipeline: preprocess → compile → assemble → link; `-c` stops before linking.
+- Locals live on the stack until their function returns; `malloc` blocks live on the heap until `free`.
+- Memory layouts differ between operating systems; observe yours instead of assuming.
+- An image is width × height × 3 bytes; PPM writes them as plain numbers. Pixel `(x, y)` sits at byte `(y * W + x) * 3`.
+
+## Spaced review
+
+1. (Module F) How does C compute the address of `a[i]`?
+2. (Module H) What does `*p = 5` do?
+3. (Module I) Which files does `gcc main.c person.c -o prog` compile, and what does it link?
+
+## Answers
+
+Quiz: 1. 47; `0010 1111`. 2. An address, in an implementation-defined format; `%p` is defined for `void *`, so other pointer types are converted to it. 3. `0xDD`. 4. Preprocess, compile, assemble, link. 5. The link step; `add` is declared but its definition is missing (for example the `.c` or `.o` file was left off the command). 6. An object file (`.o`) that is not yet linked. 7. On the stack; when its function returns. 8. Check whether it returned `NULL`. 9. On 64-bit Windows the stack is usually placed at lower addresses than the heap, and ASLR moves everything each run. 10. Returns the block to the allocator; setting the pointer to `NULL` makes accidental later use crash clearly instead of silently using freed memory.
+
+Spaced review: 1. Base address + `i * sizeof(element)`. 2. Writes 5 into the variable `p` points to. 3. Both `main.c` and `person.c` are compiled, and their object files are linked together (with the C library) into `prog`.
+
 ## C track notes
-- After this chapter, go to **02 — Tooling & Build Discipline** for warnings, debug builds, and sanitizers.
-- Then **03 — Memory, Pointers, Lifetimes** goes much deeper (containers, ownership APIs, UB awareness).
+- Before chapter 02, build milestone [M0.5 — Mandelbrot poster](../../milestones/README.md#m05--mandelbrot-poster).
+- After this chapter, go to **02 — Tooling & Build Discipline** for warnings, debug builds, and sanitizers, then **03 — C Language II** for the rest of everyday C.
+- Then **04 — Memory, Pointers, Lifetimes** goes much deeper (containers, ownership APIs, UB awareness).
 - Keep the mental model simple: **bits → bytes at addresses → compile/link → stack vs heap**.

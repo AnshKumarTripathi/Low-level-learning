@@ -218,9 +218,9 @@ count.c:5:5: error: 'count' undeclared (first use in this function)
 
 C must be told a variable's type before you use it. Fix: `int count = 5;`.
 
-### Example 3 — missing `#include` (only a warning!)
+### Example 3 — missing `#include`
 
-```c
+```text
 int main(void)
 {
     printf("Hello, world\n");
@@ -233,7 +233,7 @@ noinc.c:3:5: warning: implicit declaration of function 'printf' [-Wimplicit-func
 noinc.c:1:1: note: include '<stdio.h>' or provide a declaration of 'printf'
 ```
 
-This one is only a **warning**, so a program is still built — but it is built on a guess. The note tells you the fix: add `#include <stdio.h>`. This is why the course always compiles with `-Wall -Wextra`, and why you should never ignore a warning.
+On GCC 13 this is only a **warning**, so a program is still built — but it is built on a guess. GCC 14 and newer, and Clang, report it as an **error**. The note tells you the fix: add `#include <stdio.h>`. This is why the course always compiles with `-Wall -Wextra`, and why you should never ignore a warning.
 
 ---
 

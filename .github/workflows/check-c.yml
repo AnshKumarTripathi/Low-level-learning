@@ -1,0 +1,58 @@
+name: check C examples and solutions
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            cc: gcc
+            sanitize: "--sanitize"
+          - os: ubuntu-latest
+            cc: clang
+            sanitize: "--sanitize"
+          - os: macos-latest
+            cc: clang
+            sanitize: "--sanitize"
+          - os: windows-latest
+            cc: gcc
+            sanitize: ""
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up MinGW-w64 GCC (Windows)
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          install: mingw-w64-ucrt-x86_64-gcc
+          path-type: inherit
+
+      - name: Add MinGW to PATH (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: echo "${{ runner.temp }}\msys64\ucrt64\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+
+      - name: Install SDL2 (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libsdl2-dev
+
+      - name: Install SDL2 (macOS)
+        if: runner.os == 'macOS'
+        run: brew install sdl2
+
+      - name: Compiler version
+        run: ${{ matrix.cc }} --version
+
+      - name: Check C examples and solutions
+        run: python tools/check_c.py --cc ${{ matrix.cc }} ${{ matrix.sanitize }}

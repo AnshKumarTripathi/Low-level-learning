@@ -12,9 +12,15 @@ A third round (2026-11-04) implemented most of the improvement plan:
 - C chapters 02–13 rewritten to the chapter template (objectives, Learn with tested examples, hints, quiz, recap, spaced review);
 - a new C++ bridge, `c_plus/bridge/` B1–B8 (C to C++, classes/RAII, ownership, STL, templates, inheritance, errors, modern C++).
 
-A fourth round added the three new C chapters without renumbering (`c/02b-c-language-ii`, `c/04b-data-structures`, `c/10b-performance`), milestone projects M1–M5 plus C++ M1 with grading tables (`milestones/`), and tested solutions for one core exercise per C chapter 02–12 and per bridge chapter (`solutions/c/chapters-02-12.md`, `solutions/cpp/bridge/`).
+A fourth round added the three new C chapters without renumbering (`c/03-c-language-ii`, `c/06-data-structures`, `c/13-performance`), milestone projects M1–M5 plus C++ M1 with grading tables (`milestones/`), and tested solutions for one core exercise per C chapter 02–12 and per bridge chapter (`solutions/c/chapters-02-15.md`, `solutions/cpp/bridge/`).
 
-Every runnable example in the course (77 programs) was compiled with strict warnings and run on GCC 13 (Windows). Still open: solutions for the remaining exercises in C 02–12 and for the `c_plus/` exercise chapters, and testing the macOS/Linux/WSL/MSVC instructions on those systems.
+A fifth round finished the C track's teaching and checking:
+- Modules A–I gained **Fix the bug** exercises (each buggy program compiled and run to quote the real warnings), checkpoint quizzes, recaps, spaced review, memory diagrams (stack frames, arrays, strings, pointers, struct layout) and "Coming from Python?" boxes; chapter 01 gained a quiz and recap.
+- A fast-track placement test (`c/00-foundation/fast-track.md`) routes experienced programmers.
+- Tested solutions now cover every C exercise from 00 to 12, except the open-ended C 10b Exercise 4 and the capstone.
+- `tools/check_c.py` and `.github/workflows/check-c.yml` compile every C example and solution and run the chapter 00 output tests on Linux (GCC and Clang, with ASan/UBSan), macOS and Windows.
+
+Still open: the C++ chapters `c_plus/01`–`12` need Learn sections; solutions for the `c_plus/` exercise chapters; and the first CI run on GitHub, which will be the first real test of the Linux/macOS paths.
 
 Scope: every Markdown file in this repository (38 files, about 3,900 lines) at review time. The review itself changed no course file; the fixes listed above came later, at the course owner's request.
 
@@ -93,17 +99,17 @@ Because ASan was unavailable, I used UBSan trap mode, `-fsanitize=bounds`, `-fan
 | 00-J | `modules/J-boss-challenge.md` | 244 | Integration: student roster CLI | 2 | 1 | Checklist | No (by design) | **Yes** |
 | 01 | `c/01-low-level-mental-model/tasks.md` | 316 | Hex, addresses, endianness, compile pipeline, malloc, memory layout | 1 | 11 | Short notes | No | — |
 | 02 | `c/02-tooling-build/tasks.md` | 69 | Build modes, warnings, debugger, sanitizers | 0 | 4 | No | No | — |
-| 03 | `c/03-memory-pointers-lifetimes/tasks.md` | 82 | Dynamic array, safe strings, arena, UB | 0 | 4 | No | No | — |
-| 04 | `c/04-data-representation-bitwise/tasks.md` | 77 | Hexdump, endianness, bitset sieve, base64 | 0 | 4 | No | No | — |
-| 05 | `c/05-binary-files-parsing/tasks.md` | 73 | TLV, magic bytes, ELF/PE | 0 | 3 | No | No | — |
-| 06 | `c/06-os-io-processes/tasks.md` | 74 | cat, wc, process runner, file copy | 0 | 4 | No | No | — |
-| 07 | `c/07-networking-sockets-protocols/tasks.md` | 70 | TCP echo, UDP, framing | 0 | 3 | No | No | — |
-| 08 | `c/08-concurrency-synchronization/tasks.md` | 64 | Parallel sum, work queue, races | 0 | 3 | No | No | — |
-| 09 | `c/09-memory-tooling-allocators/tasks.md` | 67 | Bump, free-list, leak tracker | 0 | 3 | No | No | — |
-| 10 | `c/10-debugging-reverse-basics/tasks.md` | 59 | Stack frames, symbols, disassembly | 0 | 4 | No | No | — |
-| 11 | `c/11-ctf-pwn-lab/tasks.md` | 57 | Overflow, format string, hardening | 0 | 3 | No | No | — |
-| 12 | `c/12-serialization-integrity/tasks.md` | 51 | Message format, CRC, mutation testing | 0 | 3 | No | No | — |
-| 13 | `c/13-capstone/tasks.md` | 50 | VM, packet analyzer, mini shell | 0 | 3 options | No | No | **Yes** |
+| 03 | `c/04-memory-pointers-lifetimes/tasks.md` | 82 | Dynamic array, safe strings, arena, UB | 0 | 4 | No | No | — |
+| 04 | `c/05-data-representation-bitwise/tasks.md` | 77 | Hexdump, endianness, bitset sieve, base64 | 0 | 4 | No | No | — |
+| 05 | `c/07-binary-files-parsing/tasks.md` | 73 | TLV, magic bytes, ELF/PE | 0 | 3 | No | No | — |
+| 06 | `c/08-os-io-processes/tasks.md` | 74 | cat, wc, process runner, file copy | 0 | 4 | No | No | — |
+| 07 | `c/09-networking-sockets-protocols/tasks.md` | 70 | TCP echo, UDP, framing | 0 | 3 | No | No | — |
+| 08 | `c/10-concurrency-synchronization/tasks.md` | 64 | Parallel sum, work queue, races | 0 | 3 | No | No | — |
+| 09 | `c/11-memory-tooling-allocators/tasks.md` | 67 | Bump, free-list, leak tracker | 0 | 3 | No | No | — |
+| 10 | `c/12-debugging-reverse-basics/tasks.md` | 59 | Stack frames, symbols, disassembly | 0 | 4 | No | No | — |
+| 11 | `c/14-ctf-pwn-lab/tasks.md` | 57 | Overflow, format string, hardening | 0 | 3 | No | No | — |
+| 12 | `c/15-serialization-integrity/tasks.md` | 51 | Message format, CRC, mutation testing | 0 | 3 | No | No | — |
+| 13 | `c/16-capstone/tasks.md` | 50 | VM, packet analyzer, mini shell | 0 | 3 options | No | No | **Yes** |
 
 **C++ track** (every file has 0 code blocks, no summary and no solutions)
 
