@@ -56,7 +56,7 @@ def libs_for(text):
         libs.append("-lws2_32")
     if "math.h" in text:
         libs.append("-lm")
-    if "SDL2/SDL.h" in text:
+    if "<SDL.h>" in text:
         libs += sdl2_flags()
     return libs
 
@@ -65,7 +65,7 @@ def sdl2_flags():
     """Compiler flags for SDL2: from SDL2_DIR (an unpacked SDL2 dev package), else sdl2-config, else []."""
     d = os.environ.get("SDL2_DIR")
     if d:
-        return ["-I", os.path.join(d, "include"), "-L", os.path.join(d, "lib"), "-lSDL2"]
+        return ["-I", os.path.join(d, "include", "SDL2"), "-L", os.path.join(d, "lib"), "-lSDL2"]
     if shutil.which("sdl2-config"):
         r = subprocess.run(["sdl2-config", "--cflags", "--libs"], capture_output=True, text=True)
         return r.stdout.split()
@@ -121,7 +121,7 @@ def check_solutions(cc, work, sanitize):
         text = path.read_text(encoding="utf-8")
         if "int main" not in text:
             continue                      # library file of a multi-file solution
-        if "SDL2/SDL.h" in text and not sdl2_flags():
+        if "<SDL.h>" in text and not sdl2_flags():
             print(f"note: skipped {path.relative_to(ROOT)} (SDL2 not found; set SDL2_DIR or install sdl2-config)")
             continue
         siblings = [p for p in path.parent.glob("*.c") if p != path and "int main" not in p.read_text(encoding="utf-8")]

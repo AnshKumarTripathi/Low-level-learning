@@ -3,6 +3,7 @@
  *   udp_ping server <port>                    replies to every datagram with the same bytes
  *   udp_ping client <host> <port> <payload>   prints reply=<payload>, or "timeout" after 2 s
  */
+#define _POSIX_C_SOURCE 200809L   /* with -std=c17, Linux hides getaddrinfo without this */
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>

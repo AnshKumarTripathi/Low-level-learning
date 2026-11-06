@@ -27,11 +27,11 @@ Until now every image was a file. Games, editors and simulators redraw the scree
 | Linux / WSL | `sudo apt install libsdl2-dev` | `$(sdl2-config --cflags --libs)` |
 | macOS | `brew install sdl2` | `$(sdl2-config --cflags --libs)` |
 | MSYS2 (UCRT64) | `pacman -S mingw-w64-ucrt-x86_64-SDL2` | `$(sdl2-config --cflags --libs)` |
-| Windows, plain MinGW | download `SDL2-devel-2.x.x-mingw.zip` from the [SDL releases page](https://github.com/libsdl-org/SDL/releases) and unzip it | `-I<dir>/x86_64-w64-mingw32/include -L<dir>/x86_64-w64-mingw32/lib -lSDL2` |
+| Windows, plain MinGW | download `SDL2-devel-2.x.x-mingw.zip` from the [SDL releases page](https://github.com/libsdl-org/SDL/releases) and unzip it | `-I<dir>/x86_64-w64-mingw32/include/SDL2 -L<dir>/x86_64-w64-mingw32/lib -lSDL2` |
 
 On Windows the program needs `SDL2.dll` (in the package's `bin` folder) next to your `.exe` at run time. Under WSL2, windows open through WSLg on Windows 11.
 
-Put `#define SDL_MAIN_HANDLED` before `#include <SDL2/SDL.h>` and call `SDL_SetMainReady()` first in `main`. Otherwise SDL renames your `main` and you must link an extra `SDL2main` library.
+Put `#define SDL_MAIN_HANDLED` before `#include <SDL.h>` and call `SDL_SetMainReady()` first in `main`. Otherwise SDL renames your `main` and you must link an extra `SDL2main` library.
 
 ### 2. Window, renderer, texture
 

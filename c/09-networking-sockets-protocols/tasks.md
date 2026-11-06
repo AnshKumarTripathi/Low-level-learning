@@ -87,9 +87,10 @@ If the client calls `send` once with 10,000 bytes, the server may get them as on
 
 ### 5. Worked example: a TCP client
 
-Connects, sends a message, tells the server it is done sending, then prints everything the server sends back until the server closes.
+Connects, sends a message, tells the server it is done sending, then prints everything the server sends back until the server closes. The first line matters on Linux: with `-std=c17`, the system headers hide POSIX functions such as `getaddrinfo` unless you ask for them.
 
 ```c
+#define _POSIX_C_SOURCE 200809L   /* with -std=c17, Linux hides getaddrinfo without this */
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>

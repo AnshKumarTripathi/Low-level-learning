@@ -4,6 +4,7 @@
  *   frames client <host> <port> <file>      sends the file as one frame
  * Frame = 4-byte little-endian length + that many payload bytes.
  */
+#define _POSIX_C_SOURCE 200809L   /* with -std=c17, Linux hides getaddrinfo without this */
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>

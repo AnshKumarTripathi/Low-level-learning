@@ -9,6 +9,7 @@
  * Build: gcc -std=c17 -Wall -Wextra -O2 g9-render-server.c -o render_server -pthread -lm   (Windows: add -lws2_32)
  * Try:   ./render_server 8080, then open http://localhost:8080/ in a browser.
  */
+#define _POSIX_C_SOURCE 200809L   /* with -std=c17, Linux hides getaddrinfo without this */
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>

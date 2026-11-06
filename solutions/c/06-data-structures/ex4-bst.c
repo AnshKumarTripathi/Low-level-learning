@@ -109,7 +109,7 @@ static size_t build(Tree **root, int sorted)
     size_t inserted = 0;
     srand(7);
     for (int i = 0; i < 10000; i++) {
-        int key = sorted ? i : rand() * (RAND_MAX + 1) + rand();
+        int key = sorted ? i : (rand() % 32768) * 32768 + rand() % 32768;
         int r = tree_insert(root, key);
         if (r < 0) {
             fprintf(stderr, "error: out of memory\n");

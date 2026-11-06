@@ -138,6 +138,8 @@ Exploits often overwrite the **saved return address** on the stack to redirect e
 ## Case study: returning address of a local (dangling pointer)
 
 ```c
+#include <stdio.h>
+
 int *broken(void)
 {
     int x = 42;

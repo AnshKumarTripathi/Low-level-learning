@@ -2,11 +2,11 @@
  * Arrow keys turn the cube, space pauses the spin, S saves a screenshot, Esc quits.
  *
  * Build (Linux/WSL):  gcc -std=c17 -Wall -Wextra -O2 g7-window.c -o g7 $(sdl2-config --cflags --libs) -lm
- * Build (MinGW):      gcc -std=c17 -Wall -Wextra -O2 g7-window.c -o g7 -I<SDL2>/include -L<SDL2>/lib -lSDL2 -lm
+ * Build (MinGW):      gcc -std=c17 -Wall -Wextra -O2 g7-window.c -o g7 -I<SDL2>/include/SDL2 -L<SDL2>/lib -lSDL2 -lm
  * Test without looking: ./g7 --frames 120   (runs 120 frames, saves shot.ppm, exits)
  */
 #define SDL_MAIN_HANDLED            /* we write a normal main(); no SDL2main library needed */
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <math.h>
 #include <stdint.h>
 #include <stdio.h>

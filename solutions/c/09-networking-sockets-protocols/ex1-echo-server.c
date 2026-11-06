@@ -3,6 +3,7 @@
  * The client is the worked example in the chapter's Learn §5.
  * Serves one client at a time, forever; stop it with Ctrl+C.
  */
+#define _POSIX_C_SOURCE 200809L   /* with -std=c17, Linux hides getaddrinfo without this */
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
