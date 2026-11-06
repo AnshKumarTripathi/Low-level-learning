@@ -98,6 +98,28 @@ printf("%s\n", buf);   /* reads past buf until it finds a '\0' somewhere */
 
 ---
 
+## Case study 3: never let input be the format string
+
+Never let untrusted input **be** the format string:
+
+```c
+/* fragment: not a complete program — add #include lines and main() to run it */
+char user[64];
+fgets(user, sizeof user, stdin);
+printf(user);   /* DANGEROUS if user contains %n, %s, etc. */
+```
+
+If `user` contains `"%x %x %x"`, `printf` may read from the stack and **leak memory** (format-string vulnerability — revisited in chapter 14).
+
+**Safe habit**:
+
+```c
+/* fragment: not a complete program — add #include lines and main() to run it */
+printf("%s", user);   /* user is data, not the format */
+```
+
+---
+
 ## Try
 
 Declare `char msg[] = "hi";`, print with `%s`, then print `msg[0]` with `%c`.

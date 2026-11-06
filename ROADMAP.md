@@ -14,7 +14,28 @@ Each chapter folder contains a `tasks.md` file that teaches the chapter's topic 
 
 **C++ track note:** `c_plus/` keeps its own numbering (`00`…`12`), so the numbers do not match the `c/` track. Match chapters by topic name (for example `c/02-tooling-build` matches `c_plus/01-tooling-build`). Each `c/` chapter that has a C++ twin links to it at the top.
 
-**Track order:** do `c/` chapters 00–05 first. Then work through the **[C++ bridge](c_plus/bridge/README.md)** (B1–B8: from C to modern C++) before the `c_plus/` exercise chapters. C chapters 07 onward can run in parallel with the bridge.
+## The path (one line, start to finish)
+
+Follow these steps in order. Nothing here has to be run in parallel.
+
+| Step | Do | Result |
+|------|----|--------|
+| 1 | [Setup](00-setup/README.md) | a working compiler |
+| 2 | [C 00](c/00-foundation/tasks.md), Modules A–I, then boss J | you can write small C programs |
+| 3 | [C 01](c/01-low-level-mental-model/tasks.md), then [M0.5](milestones/README.md) | the machine picture and a Mandelbrot poster |
+| 4 | C 02, C 03 | tooling and the rest of everyday C |
+| 5 | C 04, then M1 | memory ownership and a string library |
+| 6 | C 05 | bits and bytes |
+| 7 | [Graphics](graphics/README.md) G1, G2, G3 | canvas, lines, triangles |
+| 8 | C 06, then M2 | data structures and a hash map |
+| 9 | Graphics G4, G5, G6 | 3D, shaded models, a ray tracer |
+| 10 | C 07, C 08, then M3 | files, processes and a mini shell |
+| 11 | C 09, C 10, then M4 | networking, threads and a key-value server |
+| 12 | Graphics G7, G8, G9 | a live window, a game engine and a render server |
+| 13 | C 11, C 12, C 13, then M5 | allocators, debugging, performance and your own `malloc` |
+| 14 | C 14, C 15, C 16 | security lab, serialization and the capstone |
+
+**After the C path:** the [C++ bridge](c_plus/bridge/README.md) (B1–B8), then the `c_plus/` exercise chapters. Those chapters are still exercise lists without lessons (see [STATUS.md](STATUS.md)).
 
 ## How to use this repo
 
@@ -104,7 +125,7 @@ You will design message formats and add integrity checks (checksums/hashes), foc
 You will pick one larger project that ties together parsing + I/O + debugging + performance discipline.
 
 ### Graphics track (C) — `graphics/`
-After C 05, you can start the **[graphics track](graphics/README.md)** alongside the C chapters: build a software renderer from scratch — a pixel canvas, lines, triangles, 3D math and a spinning wireframe cube, a shaded OBJ model with a depth buffer, a ray tracer with shadows and reflections, and a live SDL2 window with a game loop (G1–G7). Then milestone G8, a tiny game engine with your own game, and G9, a multi-threaded render server over HTTP. Planned next: a render server, and a GPU track in C++.
+Woven into the path above: the **[graphics track](graphics/README.md)**, where you build a software renderer from scratch — a pixel canvas, lines, triangles, 3D math and a spinning wireframe cube, a shaded OBJ model with a depth buffer, a ray tracer with shadows and reflections, and a live SDL2 window with a game loop (G1–G7). Then milestone G8, a tiny game engine with your own game, and G9, a multi-threaded render server over HTTP. Planned next: a render server, and a GPU track in C++.
 
 ## Book guides (C early path, concept-only)
 

@@ -34,52 +34,46 @@ printf("sizeof(int)=%zu\n", sizeof(int));
 
 ---
 
-## Why it matters (low-level view)
+## Why it matters
 
-Types are not “labels for humans” — they tell the compiler **how many bytes** to reserve and how to interpret those bytes.
+A type tells the compiler **how many bytes** to reserve and how to read them. That has two visible results:
 
-- `int` is often 4 bytes; `char` is 1 byte.
-- Whether plain `char` is signed (`-128..127`) or unsigned (`0..255`) depends on the compiler and CPU. Use `unsigned char` for raw bytes. This is also why Module G casts to `(unsigned char)` before calling `isspace`.
-- Sizes really do differ between systems: `long` is 4 bytes on 64-bit Windows but 8 bytes on 64-bit Linux and macOS. When you need an exact size (file formats, network data), use the fixed-width types from `<stdint.h>` such as `int32_t` and `uint64_t` (chapter 01 onward).
-- Integer **overflow** (adding past the maximum representable value) wraps around for `unsigned` types (well-defined), but for signed types like `int` it is **always undefined behavior** — crypto and size calculations break when you ignore this.
-- **Integer division** `10 / 3` is `3`, not `3.333…` — off-by-one bugs in buffer-size math cause security holes later.
+- **Numbers have limits.** An `int` is usually 4 bytes, so it stops at `2147483647`. Going past the limit of a signed type is **undefined behavior**: C makes no promise about what happens.
+- **Whole-number division drops the fraction.** `10 / 3` is `3`, not `3.33`.
+
+Chapter 05 goes much deeper. For now, remember the limits exist.
 
 ---
 
-## Case study: size math that breaks bounds checks
+## Case study: the shop that gave things away
 
-A toy “copy at most N bytes” helper:
+A shop checks that a customer can afford an order:
 
 ```c
-/* fragment: not a complete program — add #include lines and main() to run it */
-#define CHUNK 1024
+#include <stdio.h>
 
-void copy_chunk(const char *src, char *dst, int len)
+int main(void)
 {
-    int total = CHUNK + len;   /* if len is huge, total can overflow */
-    if (total < 2048) {
-        /* attacker chose len so total wraps negative/small */
-        /* copy might run when check "passed" */
+    int price, qty;
+    int budget = 100;
+    if (scanf("%d %d", &price, &qty) != 2) {
+        return 1;
     }
+    int total = price * qty;   /* BUG: this can go past the int limit */
+    if (total <= budget) {
+        printf("order accepted, total=%d\n", total);
+    } else {
+        printf("too expensive\n");
+    }
+    return 0;
 }
 ```
 
-**What goes wrong**: if `len` is chosen so `CHUNK + len` overflows a 32-bit `int`, `total` can become **small** while the real mathematical sum is huge. A bounds check that “passed” still allows a massive copy — classic **integer overflow → buffer overflow** chain (seen in real CVEs).
+With input `2000000000 2`, the true total is 4 billion, which does not fit in an `int`. This is undefined behavior; on a typical machine the result wraps around to a **negative** number, which is less than the budget, so the order is accepted.
 
-There is a second hole: `len` is a signed `int`, so a **negative** `len` also passes the check without any overflow at all.
+**Safer**: check before you multiply, so the multiplication can never overflow. Reject the order when `price > budget / qty` (and reject `qty <= 0` first, so you never divide by zero).
 
-**Safer pattern**: make `len` unsigned (`size_t`) and check **before** you add, so the addition can never wrap:
-
-```c
-/* fragment: not a complete program — add #include lines and main() to run it */
-#define LIMIT 2048
-
-if (len > LIMIT - CHUNK) {   /* LIMIT - CHUNK cannot overflow: both are constants */
-    /* reject: too big */
-}
-```
-
-Switching to `size_t` alone is not enough — unsigned math wraps silently, so `CHUNK + len` can still come out small. The fix is the order: **check, then add**. (Full treatment in later chapters.)
+**Lesson**: a check is only as good as the number it checks.
 
 ---
 

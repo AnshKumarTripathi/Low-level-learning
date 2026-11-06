@@ -40,6 +40,7 @@ I3 has three files: `gcc -std=c17 -Wall -Wextra -g I3/main.c I3/person.c -o pers
 | I1 | [I1.c](I1.c) | Small structs like `Point` can be passed by value. Squared distance avoids `sqrt` and floating point. |
 | I2 | [I2.c](I2.c) | The temporary `name` buffer is as large as the whole line, so `sscanf` can never overflow it, and an overlong name is *detected* instead of silently cut short. The copy uses `memcpy` after the length check has proven it fits. |
 | I3 | [I3/](I3/) | `person_read` does all validation behind the API boundary; `main` only checks the return code. The header has include guards so it is safe to include twice. |
+| A-mini | [A-mini.c](A-mini.c) | One `printf` per line makes the drawing easy to edit. Backslashes and quotes are escaped as `\\` and `\"`. |
 | B-mini | [B-mini.c](B-mini.c) | The prompt has no newline, so the cursor waits on the same line. The calculations happen inside the `printf` arguments; no extra variables are needed for a one-off value. |
 | C-mini | [C-mini.c](C-mini.c) | `(needed + per_pizza - 1) / per_pizza` rounds up using only integer division. Both zero checks come before any division. |
 | D-mini | [D-mini.c](D-mini.c) | `tries` is counted before comparing, so the correct guess is included. The loop condition alone enforces the 7-try limit. |

@@ -125,6 +125,14 @@ A picture like the one on the [track page](README.md), and three timings that gr
 ### Task
 Pick one: soft shadows (an area light: average several shadow rays to random points on a small square), refraction (glass spheres with Snell's law), or a triangle–ray intersection (Möller–Trumbore) so you can ray trace the G5 torus.
 
+
+### Hints (all exercises)
+1. Test `hit_sphere` with the numbers from Exercise 1 before you draw anything.
+2. Normalize every direction: the sphere formula assumes `d` has length 1.
+3. A black image usually means every ray misses. Print the direction for the center pixel; it should be close to `(0, 0, 1)`.
+4. Black speckles on surfaces mean a missing offset on shadow rays.
+5. Clamp colors to `0 … 1` before converting to bytes, or bright values wrap around.
+
 ---
 
 ## Checkpoint quiz

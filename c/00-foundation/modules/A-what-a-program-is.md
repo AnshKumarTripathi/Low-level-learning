@@ -25,15 +25,11 @@ A minimal C program needs:
 
 ---
 
-## Why it matters (low-level view)
+## Why it matters
 
-When you run a program, the OS loads **machine code** into memory and starts at `main`. From that moment:
+When you run a program, the operating system starts it at `main`. When `main` returns, the number you return goes back to whoever started the program: `0` means success, anything else means failure. Scripts and build tools make decisions based on that number.
 
-- Your program has its **own memory** (stack, heap, globals, code).
-- A non-zero **exit code** tells the shell or caller something failed — scripts and build tools rely on this.
-- Anything you read from the user crosses a **trust boundary**: treat input as hostile by habit, even in toy programs.
-
-Low-level security work is mostly about **what your program does with bytes in memory** after `main` starts.
+You will look inside memory later. For now: **your program is a list of instructions, and the exit code is how it reports back.**
 
 ---
 
@@ -59,26 +55,23 @@ int main(void)
 
 ---
 
-## Case study: exit codes and silent failure
+## Case study: the exit code that lied
 
-A login helper that always returns `0` even when authentication fails:
+This program is meant to report a failed login:
 
 ```c
-/* fragment: not a complete program — add #include lines and main() to run it */
-/* BAD — caller thinks login succeeded */
-int check_password(const char *input)
+#include <stdio.h>
+
+int main(void)
 {
-    if (strcmp(input, "secret") != 0) {
-        printf("wrong password\n");
-        return 0;  /* should be non-zero */
-    }
-    return 0;
+    printf("wrong password\n");
+    return 0;   /* BUG: 0 means success */
 }
 ```
 
-A shell script running `if ./check; then grant_access; fi` would **grant access on failure**. Correct pattern: `return 1` (or another non-zero code) on failure, print errors to **stderr** when appropriate.
+It looks right on screen, but a script that asks "did it succeed?" gets **yes**, and could let the user in. The fix is `return 1;`.
 
-**Lesson**: `return 0` vs `return 1` is not cosmetic — it is part of your program’s contract with the OS and other programs.
+**Lesson**: `return 0` and `return 1` are not decoration. They are a promise to whoever runs your program.
 
 ---
 
@@ -186,6 +179,53 @@ int main(int argc, char *argv[])
 - `./prog --help` → `usage: prog [--help | --fail]`, exit `0`
 - `./prog --fail` → `error: forced failure` on stderr, exit `2`
 - `./prog --oops` → `error: unknown option` on stderr, exit `2`
+
+---
+
+## Mini-project — Robot poster
+
+Make the terminal draw something. You only need `printf`.
+
+**Spec**
+- Print a robot (or a cat, a rocket, anything) at least 5 lines tall, with one `printf` per line.
+- Under the picture, print its name and a catchphrase.
+- Exit with `0`.
+
+Two characters are special inside a string. To print a backslash, write `\\`. To print a double quote, write `\"`.
+
+**Example program**:
+
+```c
+#include <stdio.h>
+
+int main(void)
+{
+    printf("  [o_o]\n");
+    printf(" /|___|\\\n");
+    printf("  |   |\n");
+    printf("  |___|\n");
+    printf("  d   b\n");
+    printf("My name is \"Bolt\".\n");
+    printf("Beep boop!\n");
+    return 0;
+}
+```
+
+**Output**:
+
+```text
+  [o_o]
+ /|___|\
+  |   |
+  |___|
+  d   b
+My name is "Bolt".
+Beep boop!
+```
+
+**Make it yours**: replace the robot with your own drawing. Then remove one `\\` from the second line, compile with `-Wall`, and read what the compiler says.
+
+Reference: [`solutions/c/00-foundation/A-mini.c`](../../../solutions/c/00-foundation/A-mini.c)
 
 ---
 

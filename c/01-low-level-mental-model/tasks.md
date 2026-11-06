@@ -1,5 +1,7 @@
 # 01 — Low-level Mental Model (C)
 
+[← 00 — Foundation](../00-foundation/tasks.md) · [Roadmap](../../ROADMAP.md) · [Next: 02 — Tooling →](../02-tooling-build/tasks.md)
+
 This chapter comes **after** absolute-beginner syntax (chapter 00). You already know variables, loops, functions, arrays, and gentle pointers. Here you build the **machine picture** that later systems chapters assume: bits, bytes, addresses, how C becomes a runnable program, and stack vs heap.
 
 Each subchapter uses **Learn → Try → Exercise**. Tested solutions with design notes: [`solutions/c/01-low-level-mental-model/`](../../solutions/c/01-low-level-mental-model/README.md) — attempt each exercise first.
@@ -471,6 +473,16 @@ The last two numbers must be equal. For input `32 32 20`: `bytes=12288`, both of
 - CS:APP — "information is bits + context": the same bytes are numbers, text or pixels depending on how you read them
 
 ---
+
+## Hints (all exercises)
+
+1. A1, A2: `%x` prints hex and expects an `unsigned int`. For powers of two, start at `1` and double.
+2. B1: cast the address for `%p`: `(void *)&x`.
+3. C1, C2: point an `unsigned char *` at the variable and read its bytes one by one. On a little-endian machine, the lowest address holds the lowest byte.
+4. D1, D2: a link error means the definition is missing, so check that every `.c` or `.o` file is on the command.
+5. E1, E2, F1: check `malloc` for `NULL` right after the call, and `free` once before exiting.
+6. G1, G2: test with a tiny image first, such as `3 1`, and compare the numbers with the desired output before you open a big one.
+7. G3: if the circle looks wrong, print `dx`, `dy` and the test result for the center pixel.
 
 ## Checkpoint quiz
 

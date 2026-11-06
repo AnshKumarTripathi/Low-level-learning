@@ -12,7 +12,7 @@ Milestones are larger projects that combine several chapters. Each one has a fix
 | M2 | `hashmap` — a reusable hash map | C 06 | C 04, C 05, C 06 | 12–16 h |
 | M3 | `minish` — a mini shell | C 08 | C 03, C 08 | 12–16 h |
 | M4 | `kvserver` — a threaded key-value server | C 10 | M2, C 07, C 09, C 10 | 20–30 h |
-| M5 | `mymalloc` — your own allocator under M2 | C 11 | M2, C 11, C 13 | 15–20 h |
+| M5 | `mymalloc` — your own allocator under M2 | C 13 | M2, C 11, C 13 | 15–20 h |
 | G8 | Tiny game engine + your own game ([spec](../graphics/G8-engine-milestone.md)) | Graphics G7 | G1–G7, C 03, C 04, C 06 | 25–40 h |
 | C++ M1 | Rewrite M0 and M2 in modern C++ | Bridge B4 | B1–B5 | 10–15 h |
 
