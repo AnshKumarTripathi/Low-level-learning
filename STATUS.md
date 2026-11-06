@@ -11,13 +11,13 @@ This page tracks the work on the course: what is finished, what is left, and how
 | Setup, glossary, navigation | **Done** |
 | C track teaching (`c/00` … `c/16`) | **Done** |
 | C solutions | **Done** — every exercise except two open-ended ones |
-| C automated checks (local script + GitHub workflow) | **Done** — passes locally; not yet run on GitHub |
+| C automated checks (local script + GitHub workflow) | **Done** — passes locally and on GitHub |
 | Milestone projects (specs and grading) | **Done** — no published solutions, by design |
 | C++ bridge (`c_plus/bridge` B1–B8) | **Done** |
 | C++ exercise chapters (`c_plus/00` … `c_plus/12`) | **Not done** — exercise lists only, no Learn sections |
 | C++ solutions | **Partly done** — one exercise per bridge chapter only |
 | C++ automated checks | **Not done** |
-| Testing on Linux, macOS, WSL, MSVC | **Not done** — everything was run on Windows, GCC 13 only |
+| Testing on Linux, macOS, Windows CI | **Done** — `tools/check_c.py` passes on GitHub (Ubuntu GCC and Clang with sanitizers, macOS Clang, Windows GCC). WSL and MSVC not run; setup steps and interactive programs not run by hand on those systems |
 
 ---
 
