@@ -30,6 +30,8 @@ failures = []
 def fail(msg):
     failures.append(msg)
     print("FAIL:", msg)
+    if os.environ.get("GITHUB_ACTIONS"):      # annotations are readable without opening the log
+        print("::error::" + msg.replace("%", "%25").replace("\r", "").replace("\n", "%0A"))
 
 
 def base_flags(cc, werror, sanitize):
