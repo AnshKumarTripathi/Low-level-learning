@@ -17,6 +17,19 @@ By the end of this chapter you will be able to:
 
 "Low-level" often means "fast". But intuition about speed is usually wrong: the slow part is rarely where you expect, and the biggest wins come from memory access patterns, not from clever arithmetic. The rule of this chapter: **measure first, change one thing, measure again**.
 
+## Session plan
+
+This chapter is long. Work through it in 6 sittings; each one ends with a stop marker.
+
+| Session | Do |
+|---------|----|
+| 1 | Learn §1–3 |
+| 2 | Learn §4–5 |
+| 3 | Exercise 1 — Timing harness |
+| 4 | Exercise 2 — Array vs linked list |
+| 5 | Exercise 3 — AoS vs SoA |
+| 6 | Exercise 4 — Profile and speed up a real program, then the quiz and recap |
+
 ---
 
 ## Learn
@@ -154,6 +167,8 @@ struct Particles {                           /* struct of arrays (SoA) */
 
 A loop that only reads `x` uses 4 bytes of every 32-byte struct in AoS, so 7/8 of every cache line it loads is wasted. In SoA, every byte of every line is used, and the compiler can easily use SIMD instructions. Choose the layout for the loops that matter: AoS when you use whole objects at once, SoA when hot loops touch one or two fields of many objects.
 
+> **Session 1 of 6 complete: a good place to stop.** Check: close this page and explain in your own words: The memory hierarchy; Measuring correctly; Data layout: array of structs vs struct of arrays. Stuck on one? Re-read it before moving on.
+
 ### 4. Profiling: find the hot spot first
 
 A **profiler** shows where the time actually goes. Never optimise without one.
@@ -177,6 +192,8 @@ A profiler's "flat profile" or "hot functions" view lists functions by the share
 4. **Compiler help**: `-O2`/`-O3`, `-march=native` (only for programs run on the same kind of CPU), profile-guided optimisation.
 5. **Micro-tuning** (branchless tricks, manual unrolling) — last, with measurements, and only in the hottest loop.
 
+> **Session 2 of 6 complete: a good place to stop.** Check: close this page and explain in your own words: Profiling: find the hot spot first; What usually helps, in order. Stuck on one? Re-read it before moving on.
+
 ---
 
 ## Exercises
@@ -193,6 +210,8 @@ Turn `now_seconds` and `median_ms` into a reusable `bench.h`/`bench.c` module th
 2. Make the functions store results into `ctx`, so the compiler cannot delete the work.
 3. Compare the spread (max − min) between a quiet machine and one running a video.
 
+> **Session 3 of 6 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
+
 ## Exercise 2 — Array vs linked list
 ### Task
 Sum 10,000,000 integers stored (a) in an array and (b) in a linked list whose nodes were allocated in order, then (c) in a linked list whose nodes are linked in a **shuffled** order. Time each with your harness.
@@ -205,6 +224,8 @@ Sum 10,000,000 integers stored (a) in an array and (b) in a linked list whose no
 2. On the machine used for this chapter, the median times were about 3 ms (array), 21 ms (list in order) and 1,180 ms (shuffled list). Explain both gaps with Learn §1: (b) is slower than (a) because each node is 4× bigger than an `int`, every step must load `next` before it can continue, and the loop cannot use SIMD; (c) is far slower again because almost every step misses the cache.
 3. Free everything; check under ASan on Linux/WSL.
 
+> **Session 4 of 6 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
+
 ## Exercise 3 — AoS vs SoA
 ### Task
 Implement the particle update `x += vx * dt` (and for y, z) for 1,000,000 particles in both layouts from Learn §3, and time 100 steps of each.
@@ -215,6 +236,8 @@ Implement the particle update `x += vx * dt` (and for y, z) for 1,000,000 partic
 ### Hints
 1. Then add a second loop that uses *all eight* fields per particle and time again: the winner may change.
 2. Look at the `-O2 -S` output (C 12) of the SoA loop for SIMD instructions using `xmm` or `ymm` registers.
+
+> **Session 5 of 6 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
 
 ## Exercise 4 — Profile and speed up a real program
 ### Task

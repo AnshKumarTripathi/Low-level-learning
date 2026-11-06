@@ -17,6 +17,17 @@ By the end of this chapter you will be able to:
 
 Parsers are where untrusted data meets your code. Image libraries, document viewers, font renderers and network stacks have all had serious vulnerabilities from one unchecked length field. A parser that is **total** — it gives a clean error for every possible input, including garbage — is one of the most valuable things a low-level programmer can write.
 
+## Session plan
+
+This chapter is long. Work through it in 4 sittings; each one ends with a stop marker.
+
+| Session | Do |
+|---------|----|
+| 1 | Learn §1–4 |
+| 2 | Exercise 1 — TLV parser (Type-Length-Value) |
+| 3 | Exercise 2 — “magic bytes” format detector |
+| 4 | Exercise 3 — Minimal ELF/PE header reader (choose one), then the quiz and recap |
+
 ---
 
 ## Learn
@@ -187,6 +198,8 @@ offset 0x18  entry point: u32 (32-bit) or u64 (64-bit), in the byte order above
 
 Every offset you take from the file (like `e_lfanew`) must be checked against the buffer size before you use it.
 
+> **Session 1 of 4 complete: a good place to stop.** Check: close this page and explain in your own words: Two steps: read, then interpret; Why not cast the buffer to a struct?; Worked example: a bounds-checked reader; Real formats you will meet. Stuck on one? Re-read it before moving on.
+
 ---
 
 ## Exercises
@@ -216,6 +229,8 @@ For each record, print one line:
 3. Make test files with a short Python one-liner, for example `python -c "open('t.bin','wb').write(bytes([1,3,0,65,66,67]))"` → expected `idx=0 type=1 len=3 value_hex=414243`.
 4. Test files to make: empty; one good record; good record + 2 stray bytes; a record whose length is 1000 but only 3 bytes follow.
 
+> **Session 2 of 4 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
+
 ## Exercise 2 — “magic bytes” format detector
 ### Task
 Write a program that recognizes file types by signature (magic bytes).
@@ -238,6 +253,8 @@ Where `<name>` is one of:
 1. Read only the first 8 bytes. A file shorter than a signature cannot match it.
 2. Keep signatures in a table (`struct { const char *name; const uint8_t *magic; size_t len; }`) and loop over it, instead of a long chain of `if`s.
 3. Use `memcmp`, never `strcmp`: signatures contain zero bytes.
+
+> **Session 3 of 4 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
 
 ## Exercise 3 — Minimal ELF/PE header reader (choose one)
 ### Task

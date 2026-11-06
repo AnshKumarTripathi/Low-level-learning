@@ -17,6 +17,19 @@ By the end of this chapter you will be able to:
 
 File formats, network packets, compression, cryptography, device registers and permission flags are all bit patterns. Bugs here are quiet: a sign extension or a wrong shift gives a slightly wrong number, which later becomes a wrong length — and a buffer overflow.
 
+## Session plan
+
+This chapter is long. Work through it in 6 sittings; each one ends with a stop marker.
+
+| Session | Do |
+|---------|----|
+| 1 | Learn §1–3 |
+| 2 | Learn §4–5 |
+| 3 | Exercise 1 — Hexdump (minimal) |
+| 4 | Exercise 2 — Endianness detector + swapper |
+| 5 | Exercise 3 — Bitset + Sieve |
+| 6 | Exercise 4 — Base64 (encode only), then the quiz and recap |
+
 ---
 
 ## Learn
@@ -97,6 +110,8 @@ int main(void)
 }
 ```
 
+> **Session 1 of 6 complete: a good place to stop.** Check: close this page and explain in your own words: Fixed-width types; Two's complement: how negative numbers are stored; Bitwise operators. Stuck on one? Re-read it before moving on.
+
 ### 4. Shift and conversion traps
 
 **Shifts.** These are undefined behavior:
@@ -168,6 +183,8 @@ Points to notice:
 - `fread` returns how many items it read. Use that number, never the buffer size.
 - After the loop, `ferror` tells you whether the loop ended by error or by end of file.
 
+> **Session 2 of 6 complete: a good place to stop.** Check: close this page and explain in your own words: Shift and conversion traps; Reading a file as bytes. Stuck on one? Re-read it before moving on.
+
 ---
 
 ## Exercises
@@ -197,6 +214,8 @@ For each row:
 4. A short last row needs padding spaces so the ASCII column lines up.
 5. Compare with `xxd` or `hexdump -C` on Linux/WSL, or `Format-Hex` in PowerShell.
 
+> **Session 3 of 6 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
+
 ## Exercise 2 — Endianness detector + swapper
 ### Task
 Write a program that:
@@ -213,6 +232,8 @@ Write a program that:
 3. 32 bits: move each byte separately — `((x >> 24) & 0xFF) | ((x >> 8) & 0xFF00) | ((x << 8) & 0xFF0000) | (x << 24)`.
 4. Test vectors: `0x1234` → `0x3412`; `0x12345678` → `0x78563412`; `0x0102030405060708` → `0x0807060504030201`.
 5. Parse input with `strtoull(text, &end, 0)` (base 0 accepts `0x…`) and check `*end == '\0'`.
+
+> **Session 4 of 6 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
 
 ## Exercise 3 — Bitset + Sieve
 ### Task
@@ -235,6 +256,8 @@ Implement a bitset and use it to compute primes up to N (sieve of Eratosthenes).
 2. Sieve: mark every multiple of each prime `p`, starting at `p * p`, as "not prime".
 3. Test vectors: N=100 → 25 primes, last 97. N=2 → 1 prime, last 2. N=1 → 0, -1.
 4. Use `calloc` so every bit starts at 0, and free the bitset at the end.
+
+> **Session 5 of 6 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
 
 ## Exercise 4 — Base64 (encode only)
 ### Task

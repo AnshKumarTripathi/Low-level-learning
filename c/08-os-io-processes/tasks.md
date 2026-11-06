@@ -16,6 +16,19 @@ By the end of this chapter you will be able to:
 
 Command-line tools are glued together by exit codes and byte streams. A tool that hides errors, or prints them to stdout, breaks every script that uses it. The OS boundary is also where most portability work happens: Windows and POSIX systems do the same jobs with different APIs.
 
+## Session plan
+
+This chapter is long. Work through it in 6 sittings; each one ends with a stop marker.
+
+| Session | Do |
+|---------|----|
+| 1 | Learn §1–3 |
+| 2 | Learn §4–5 |
+| 3 | Exercise 1 — `cat`-lite |
+| 4 | Exercise 2 — `wc`-lite |
+| 5 | Exercise 3 — “run command” wrapper |
+| 6 | Exercise 4 — Copy large file efficiently, then the quiz and recap |
+
 ---
 
 ## Learn
@@ -68,6 +81,8 @@ Rules:
 ### 3. Text vs binary mode (Windows)
 
 On Windows, text mode (`"r"`, `"w"`) converts `\r\n` ↔ `\n` and treats byte `0x1A` as end of file. A `copy` tool in text mode silently changes binary files. Always use `"rb"` and `"wb"` for byte-exact work (see also C 05 Learn §5). On Linux and macOS both modes are the same.
+
+> **Session 1 of 6 complete: a good place to stop.** Check: close this page and explain in your own words: The layers; Reporting errors; Text vs binary mode (Windows). Stuck on one? Re-read it before moving on.
 
 ### 4. Short reads and write errors
 
@@ -134,6 +149,8 @@ int main(void)
 
 Only the Windows branch was run while writing this chapter; the POSIX branch follows the standard pattern from `man 2 fork`, `man 3 exec` and `man 2 waitpid`.
 
+> **Session 2 of 6 complete: a good place to stop.** Check: close this page and explain in your own words: Short reads and write errors; Running another program. Stuck on one? Re-read it before moving on.
+
 ---
 
 ## Exercises
@@ -156,6 +173,8 @@ Implement a minimal `cat` that prints a file to stdout.
 2. On Windows, `stdout` is in text mode, so `\n` becomes `\r\n`. For byte-exact output, call `_setmode(_fileno(stdout), _O_BINARY)` (from `<io.h>` and `<fcntl.h>`) inside `#ifdef _WIN32`.
 3. Use `perror(path)` for the missing-file case.
 
+> **Session 3 of 6 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
+
 ## Exercise 2 — `wc`-lite
 ### Task
 Count lines, words, and bytes in a file.
@@ -177,6 +196,8 @@ Print one line:
 3. Open in `"rb"` so `bytes` is the real file size on Windows too.
 4. Check against `wc` on Linux/WSL with a file of mixed spaces, tabs and blank lines.
 
+> **Session 4 of 6 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
+
 ## Exercise 3 — “run command” wrapper
 ### Task
 Write a CLI tool that runs another program and reports its exit code.
@@ -195,6 +216,8 @@ Print one line:
 1. Start from `run_and_wait` in Learn §5. Your own `argv + 1` is already a NULL-terminated argument list to pass on.
 2. To test exit codes, run a program you wrote that returns a known number (for example A2 from chapter 00).
 3. On Windows, a return value of `-1` with `errno == ENOENT` means not found. On POSIX, the convention is that the child exits with 127.
+
+> **Session 5 of 6 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
 
 ## Exercise 4 — Copy large file efficiently
 ### Task

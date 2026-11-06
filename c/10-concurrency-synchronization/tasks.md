@@ -17,6 +17,18 @@ By the end of this chapter you will be able to:
 
 Every modern CPU has several cores, and servers, games and databases use them all. Concurrency bugs are the hardest bugs to find: they depend on timing, so the program passes a test 999 times and fails on the 1000th — usually in production.
 
+## Session plan
+
+This chapter is long. Work through it in 5 sittings; each one ends with a stop marker.
+
+| Session | Do |
+|---------|----|
+| 1 | Learn §1–3 |
+| 2 | Learn §4–6 |
+| 3 | Exercise 1 — Parallel sum |
+| 4 | Exercise 2 — Work queue (producer/consumer) |
+| 5 | Exercise 3 — Race condition lab, then the quiz and recap |
+
 ---
 
 ## Learn
@@ -129,6 +141,8 @@ Things to notice:
 - `jobs` lives in `main`, and `main` joins every thread before reading the results or returning. A thread must never use memory that may already be gone.
 - The output is printed **after** joining, in a fixed order, so it is deterministic even though the threads finish in any order.
 
+> **Session 1 of 5 complete: a good place to stop.** Check: close this page and explain in your own words: Threads; A data race, step by step; Worked example: share as little as possible. Stuck on one? Re-read it before moving on.
+
 ### 4. Condition variables: waiting for a state
 
 A bounded queue (Exercise 2) needs consumers to **sleep** while the queue is empty, and the producer to sleep while it is full. A condition variable lets a thread wait until another thread signals that something changed:
@@ -155,6 +169,8 @@ Thread A holds lock 1 and waits for lock 2; thread B holds lock 2 and waits for 
 
 ThreadSanitizer (`-fsanitize=thread`, GCC or Clang on Linux and macOS, also in WSL) reports data races with the two conflicting stack traces. It is not available with MinGW GCC on Windows.
 
+> **Session 2 of 5 complete: a good place to stop.** Check: close this page and explain in your own words: Condition variables: waiting for a state; Deadlock; Tools. Stuck on one? Re-read it before moving on.
+
 ---
 
 ## Exercises
@@ -180,6 +196,8 @@ Given a file of integers (one per line), compute the sum using N worker threads.
 3. Add the partial sums in `main` after joining.
 4. Check: the result must be identical for `--threads 1`, `2`, `7` and `64`.
 
+> **Session 3 of 5 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
+
 ## Exercise 2 — Work queue (producer/consumer)
 ### Task
 Implement a bounded queue with:
@@ -204,6 +222,8 @@ Jobs can be “hash this string” or “count vowels” (simple deterministic w
 2. Shutdown: the producer sets `closed = 1` under the lock and calls `pthread_cond_broadcast(&not_empty)`. Consumers leave their loop when the queue is empty **and** closed (Learn §4).
 3. Count `jobs_done` with an atomic or under the queue lock; record `max_queue_depth` inside `push`.
 4. Run it many times in a loop with small queue sizes (1 or 2) — that is where shutdown bugs show up.
+
+> **Session 4 of 5 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
 
 ## Exercise 3 — Race condition lab
 ### Task

@@ -18,6 +18,17 @@ By the end of this chapter you will be able to:
 
 To defend code you have to understand how it is attacked. Every mitigation in this chapter exists because these bugs were exploited in real software. The goal is not to write exploits: it is to recognise vulnerable code on sight and know which defences make it harder to abuse.
 
+## Session plan
+
+This chapter is long. Work through it in 4 sittings; each one ends with a stop marker.
+
+| Session | Do |
+|---------|----|
+| 1 | Learn §1–3 |
+| 2 | Exercise 1 — Buffer overflow (classic) |
+| 3 | Exercise 2 — Format string bug |
+| 4 | Exercise 3 — Hardening checklist, then the quiz and recap |
+
 ---
 
 ## Learn
@@ -85,6 +96,8 @@ Check what a binary has: on Windows, `objdump -p prog.exe` and look for `DllChar
 
 Mitigations make exploits **harder**, never impossible. The only real fix is code that never writes out of bounds.
 
+> **Session 1 of 4 complete: a good place to stop.** Check: close this page and explain in your own words: How a stack overflow reaches the return address; Format-string leaks; Mitigations. Stuck on one? Re-read it before moving on.
+
 ---
 
 ## Exercises
@@ -111,6 +124,8 @@ Create a program with two modes:
 3. In gdb, break in the vulnerable function, run `info frame` before and after the copy, and find the saved `rip` being overwritten with `0x4141…` (`A` is `0x41`).
 4. `--fixed` must also handle a line longer than the 256-byte read buffer (chapter 00 Module J, Hint 12).
 
+> **Session 2 of 4 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
+
 ## Exercise 2 — Format string bug
 ### Task
 Create a program with:
@@ -129,6 +144,8 @@ Create a program with:
 1. Input like `%p.%p.%p.%p.%p.%p` makes the leaked values easy to read.
 2. Put a local variable with a recognisable value (`0xdeadbeef`) in the function and look for it among the leaked values.
 3. Compile with `-Wall -Wformat-security`: GCC warns about `printf(input)`. Keep that warning on forever.
+
+> **Session 3 of 4 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
 
 ## Exercise 3 — Hardening checklist
 ### Task

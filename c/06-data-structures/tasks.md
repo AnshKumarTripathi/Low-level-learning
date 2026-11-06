@@ -19,6 +19,20 @@ By the end of this chapter you will be able to:
 
 Every program is data structures plus the code that walks them. Building them by hand once shows what the C++ standard library (B4) does for you, what each operation really costs, and how memory layout affects speed — which chapter 13 measures.
 
+## Session plan
+
+This chapter is long. Work through it in 7 sittings; each one ends with a stop marker.
+
+| Session | Do |
+|---------|----|
+| 1 | Learn §1–3 |
+| 2 | Learn §4–7 |
+| 3 | Exercise 1 — Linked list toolkit |
+| 4 | Exercise 2 — Hash map (string → int) |
+| 5 | Exercise 3 — Priority queue and top-k |
+| 6 | Exercise 4 — BST and the sorted-input trap |
+| 7 | Exercise 5 — Sort race, then the quiz and recap |
+
 ---
 
 ## Learn
@@ -191,6 +205,8 @@ Known values to test against: `fnv1a("") = 811c9dc5`, `fnv1a("a") = e40c292c`, `
 
 The **load factor** is `count / capacity`. As it rises, collisions multiply. Grow the table (double the capacity and re-insert every entry) when the load factor passes about 0.7 for open addressing.
 
+> **Session 1 of 7 complete: a good place to stop.** Check: close this page and explain in your own words: Big-O in one table; Linked lists and the pointer-to-pointer trick; Hash maps. Stuck on one? Re-read it before moving on.
+
 ### 4. Binary heap: a priority queue in an array
 
 A **min-heap** is a tree where every parent is ≤ its children, stored in an array with no pointers:
@@ -276,6 +292,8 @@ int main(void)
 
 Output: `4 0 -1`. Binary search is famous for off-by-one bugs: keep one rule (here, "the key is in `a[lo..hi)`, `hi` excluded") and make every line respect it. The standard library has it too: `bsearch`, which takes the same comparator as `qsort`.
 
+> **Session 2 of 7 complete: a good place to stop.** Check: close this page and explain in your own words: Binary heap: a priority queue in an array; Binary search trees; Testing data structures; Sorting and searching. Stuck on one? Re-read it before moving on.
+
 ---
 
 ## Exercises
@@ -292,6 +310,8 @@ Extend the list from Learn §2 with `list_reverse` (in place, no allocation), `l
 2. `list_remove_all` is the `list_remove` loop without the `return` — but do not advance `link` after removing, because `*link` is already the next node.
 3. Run the tests under ASan (Linux/WSL) to prove there are no leaks.
 
+> **Session 3 of 7 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
+
 ## Exercise 2 — Hash map (string → int)
 ### Task
 Implement an open-addressing hash map with FNV-1a and linear probing: `map_init`, `map_free`, `map_put`, `map_get`, `map_remove`. Keys are copied into the map (it owns them). Grow when the load factor would exceed 0.7.
@@ -306,6 +326,8 @@ Implement an open-addressing hash map with FNV-1a and linear probing: `map_init`
 3. When growing, re-insert every used entry into the new array; do not copy slots one-to-one.
 4. Use `strdup`-style copying: `malloc(strlen(key) + 1)` and `memcpy`. `map_free` frees every key.
 
+> **Session 4 of 7 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
+
 ## Exercise 3 — Priority queue and top-k
 ### Task
 Implement a min-heap of `int` on a growable array (`heap_push`, `heap_pop`, `heap_peek`, `heap_size`). Use it to print the `k` largest numbers from stdin in descending order, using only O(k) memory.
@@ -317,6 +339,8 @@ Implement a min-heap of `int` on a growable array (`heap_push`, `heap_pop`, `hea
 1. Keep a min-heap of at most `k` elements. For each new number larger than the heap's minimum, pop the minimum and push the new number.
 2. At the end, pop everything into an array and print it in reverse.
 3. Write `heap_check` that verifies `a[(i-1)/2] <= a[i]` for every `i > 0`.
+
+> **Session 5 of 7 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
 
 ## Exercise 4 — BST and the sorted-input trap
 ### Task
@@ -332,6 +356,8 @@ Implement a binary search tree of `int` keys with insert, contains, in-order pri
 3. Free the tree with a post-order traversal (children first, then the node).
 
 **Milestone:** after this chapter, build [M2 — `hashmap`](../../milestones/README.md#m2--hashmap-a-reusable-hash-map).
+
+> **Session 6 of 7 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
 
 ## Exercise 5 — Sort race
 ### Task

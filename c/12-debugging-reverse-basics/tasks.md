@@ -17,6 +17,19 @@ By the end of this chapter you will be able to:
 
 When a bug only happens in an optimised build, when you have no source code, or when you need to know exactly what the CPU does (for performance or security), assembly is the ground truth. You do not need to *write* assembly, but reading it is a core low-level skill.
 
+## Session plan
+
+This chapter is long. Work through it in 6 sittings; each one ends with a stop marker.
+
+| Session | Do |
+|---------|----|
+| 1 | Learn §1–3 |
+| 2 | Learn §4–5 |
+| 3 | Exercise 1 — Stack frame exploration |
+| 4 | Exercise 2 — Symbols on/off |
+| 5 | Exercise 3 — “Read bytes, interpret later” |
+| 6 | Exercise 4 — Disassembly comparison (manual), then the quiz and recap |
+
 ---
 
 ## Learn
@@ -99,6 +112,8 @@ Reading it:
 
 [Compiler Explorer (godbolt.org)](https://godbolt.org/) shows this side by side for any compiler, and colours each source line and its instructions.
 
+> **Session 1 of 6 complete: a good place to stop.** Check: close this page and explain in your own words: x86-64 registers in one table; The stack frame; Reading compiler output. Stuck on one? Re-read it before moving on.
+
 ### 4. gdb: memory, registers, frames
 
 Real session on this program (built with `-g -O0`):
@@ -164,6 +179,8 @@ No symbol table is loaded.  Use the "file" command.
 
 Without symbols, a backtrace shows only raw addresses, and you have to recognise functions from their assembly — which is what reverse engineering is.
 
+> **Session 2 of 6 complete: a good place to stop.** Check: close this page and explain in your own words: gdb: memory, registers, frames; Symbols and stripping. Stuck on one? Re-read it before moving on.
+
 ---
 
 ## Exercises
@@ -183,6 +200,8 @@ Write a program with a chain of functions that pass a struct by value and by poi
 2. In the by-value function, `print &p` shows an address in the callee's frame; in the by-pointer function, `print p` shows the caller's address. Compare them with `info frame` in each.
 3. Use `up` and `down` to move between frames and `info locals` to list variables.
 
+> **Session 3 of 6 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
+
 ## Exercise 2 — Symbols on/off
 ### Task
 Build your program with and without symbols (or with stripping) and compare debugging experience.
@@ -196,6 +215,8 @@ Build your program with and without symbols (or with stripping) and compare debu
 1. Build three versions: `-g -O0`, plain `-O2`, and `-O2` followed by `strip`. Compare file sizes too.
 2. In the stripped one, `break *0x…` (with an address from `objdump -d`) still lets you stop somewhere.
 3. Try `-g -O2`: you get symbols, but some variables show as `<optimized out>`. Explain why using Learn §3.
+
+> **Session 4 of 6 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
 
 ## Exercise 3 — “Read bytes, interpret later”
 ### Task
@@ -213,6 +234,8 @@ Read a file into memory and implement a small “view” that prints 16 bytes st
 1. Reuse your chapter 07 file-reading code. Decide what happens when fewer than 16 bytes remain (print what is left, or treat it as an error) and document it.
 2. Check `offset >= size` before touching the buffer. Parse the offset with `strtoull` and reject trailing garbage.
 3. Use it on a compiled `.exe`: `--offset 0` should start with `4d5a` (`MZ`).
+
+> **Session 5 of 6 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
 
 ## Exercise 4 — Disassembly comparison (manual)
 ### Task

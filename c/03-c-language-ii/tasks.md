@@ -19,6 +19,21 @@ By the end of this chapter you will be able to:
 
 Chapters 04–16 use every one of these tools: `typedef`'d structs for APIs, function pointers for comparators and callbacks, `static` helpers inside modules, macros for allocation tracking, `strtol` for command-line options. Learning them once, properly, avoids a lot of confusion later.
 
+## Session plan
+
+This chapter is long. Work through it in 8 sittings; each one ends with a stop marker.
+
+| Session | Do |
+|---------|----|
+| 1 | Learn §1–3 |
+| 2 | Learn §4–6 |
+| 3 | Learn §7–8 |
+| 4 | Exercise 1 — Shape calculator with a tagged union |
+| 5 | Exercise 2 — Sortable inventory |
+| 6 | Exercise 3 — Command dispatcher |
+| 7 | Exercise 4 — Multi-file module with private helpers |
+| 8 | Exercise 5 — High-score table, then the quiz and recap |
+
 ---
 
 ## Learn
@@ -114,6 +129,8 @@ void counter_add(int n) { log_call(); counter_total += n; }
 ```
 
 **Rule:** make every function and global `static` unless another file needs it. Fewer visible names means fewer clashes and a clearer API (the header lists exactly what is public).
+
+> **Session 1 of 8 complete: a good place to stop.** Check: close this page and explain in your own words: `const` with pointers; `enum`, `union`, `typedef`, designated initializers; `static` and `extern`: what other files can see. Stuck on one? Re-read it before moving on.
 
 ### 4. The preprocessor and macro traps
 
@@ -265,6 +282,8 @@ int main(void)
 
 Prints to stderr: `[info] started with 4 workers` and `[warn] disk C: is 91.5% full`. GCC can check the format string of your own function too: add `__attribute__((format(printf, 2, 3)))` before it.
 
+> **Session 2 of 8 complete: a good place to stop.** Check: close this page and explain in your own words: The preprocessor and macro traps; Function pointers; Variadic functions. Stuck on one? Re-read it before moving on.
+
 ### 7. Parsing numbers robustly
 
 `atoi("12abc")` returns 12 and `atoi("abc")` returns 0 — with no way to tell an error from a real zero. Use `strtol`, which reports where parsing stopped and sets `errno` on overflow:
@@ -365,6 +384,8 @@ Rules that prevent most file bugs:
 - Parse each line after reading it (`sscanf`, or `strtol` from §7). One bad line should produce a warning with its **line number**, not garbage or a crash. A file is input, so treat it as hostile, just like the keyboard.
 - `stdin`, `stdout` and `stderr` are `FILE *` too: `fprintf(stderr, ...)` and `fgets(line, size, stdin)` use the same functions.
 
+> **Session 3 of 8 complete: a good place to stop.** Check: close this page and explain in your own words: Parsing numbers robustly; Text files: `fopen`, `fgets`, `fprintf`, `fclose`. Stuck on one? Re-read it before moving on.
+
 ---
 
 ## Exercises
@@ -389,6 +410,8 @@ For the three lines above:
 2. One `area` function with a `switch` on the tag; compile with `-Wall` and delete a `case` to see the warning.
 3. Triangle area: Heron's formula, `s = (a+b+c)/2`, `area = sqrt(s(s-a)(s-b)(s-c))`. Link with `-lm` on Linux.
 
+> **Session 4 of 8 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
+
 ## Exercise 2 — Sortable inventory
 ### Task
 Read `name qty price` lines into an array of structs. A command-line option chooses the sort order: `--by name`, `--by qty`, or `--by price` (ties broken by name). Print the sorted list.
@@ -400,6 +423,8 @@ Read `name qty price` lines into an array of structs. A command-line option choo
 1. One comparator per order, chosen with a table of `{option name, comparator}` (Learn §5).
 2. Compare doubles with `(a > b) - (a < b)` too.
 3. Unknown `--by` value → print the valid choices and exit 2.
+
+> **Session 5 of 8 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
 
 ## Exercise 3 — Command dispatcher
 ### Task
@@ -414,6 +439,8 @@ Write a REPL that reads lines like `add 2 3`, `neg 5`, `avg 1 2 3 4` and dispatc
 2. Functions take `(int argc, const int *args)`; the table checks the argument count before calling.
 3. Add a new command to prove that only the table changes, not the dispatch code.
 
+> **Session 6 of 8 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
+
 ## Exercise 4 — Multi-file module with private helpers
 ### Task
 Turn Exercise 3 into three files: `commands.h` (the table type and one lookup function), `commands.c` (all command functions `static`, the table `static const`), and `main.c` (the REPL).
@@ -425,6 +452,8 @@ Turn Exercise 3 into three files: `commands.h` (the table type and one lookup fu
 ### Hints
 1. Expose `const CommandEntry *find_command(const char *name);` — nothing else.
 2. In `nm` output, `T` means a global function, `t` a file-local (`static`) one.
+
+> **Session 7 of 8 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
 
 ## Exercise 5 — High-score table
 ### Task

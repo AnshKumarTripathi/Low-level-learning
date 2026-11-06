@@ -16,6 +16,18 @@ By the end of this chapter you will be able to:
 
 Games, databases, browsers and embedded systems often replace `malloc` with allocators built for their own patterns, because the general-purpose one is too slow or wastes memory. Writing one also shows you *why* heap bugs (double free, overflow into the next block) are so dangerous: they corrupt the allocator's own bookkeeping.
 
+## Session plan
+
+This chapter is long. Work through it in 5 sittings; each one ends with a stop marker.
+
+| Session | Do |
+|---------|----|
+| 1 | Learn §1–3 |
+| 2 | Learn §4–5 |
+| 3 | Exercise 1 — Bump allocator |
+| 4 | Exercise 2 — Free-list allocator (basic) |
+| 5 | Exercise 3 — Leak tracker wrapper, then the quiz and recap |
+
 ---
 
 ## Learn
@@ -167,6 +179,8 @@ Thinking behind it:
 - `alloc` and `free` are both a couple of pointer moves: constant time, no searching.
 - The pool cannot detect a double free: `pool_free(&p, b)` twice puts `b` on the list twice, and two later `alloc`s return the same block. Exercise 2 asks you to detect that — which needs extra bookkeeping (a "used" flag per block or handle).
 
+> **Session 1 of 5 complete: a good place to stop.** Check: close this page and explain in your own words: What `malloc` keeps next to your data; Fragmentation; Worked example: a fixed-size pool allocator. Stuck on one? Re-read it before moving on.
+
 ### 4. Invariants and a self-check
 
 An **invariant** is a fact that must be true between operations. For a free-list allocator, for example:
@@ -191,6 +205,8 @@ void tracked_free(void *p, const char *file, int line);
 
 `__FILE__` and `__LINE__` are filled in where the macro is *used*, so `MALLOC(64)` on line 12 of `main.c` records `main.c:12`.
 
+> **Session 2 of 5 complete: a good place to stop.** Check: close this page and explain in your own words: Invariants and a self-check; Wrapping `malloc` to track leaks. Stuck on one? Re-read it before moving on.
+
 ---
 
 ## Exercises
@@ -212,6 +228,8 @@ Implement an allocator that allocates linearly from a fixed buffer and supports 
 1. This is the chapter 04 arena with a `reset` that sets the offset back to 0. Reuse your code.
 2. Parse the comma list with `strtoul` in a loop, using its `end` pointer to step over each `,`.
 3. Example to check by hand: `--size 64 --alloc 10,20,40` with 8-byte alignment → offsets 0, 16, then `oom` (16 + 20 = 36, aligned to 40, 40 + 40 > 64).
+
+> **Session 3 of 5 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
 
 ## Exercise 2 — Free-list allocator (basic)
 ### Task
@@ -240,6 +258,8 @@ Implement an allocator that supports `alloc` and `free`, reusing freed blocks.
 3. `free`: mark free, then merge with the next and previous blocks if they are free (coalescing, Learn §2).
 4. Double free = `free` on a handle whose block is already free. Unknown handle = index out of range or never handed out.
 5. Write `check()` (Learn §4) and call it after every command.
+
+> **Session 4 of 5 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
 
 ## Exercise 3 — Leak tracker wrapper
 ### Task

@@ -17,6 +17,18 @@ By the end of this chapter you will be able to:
 
 Network input is the most hostile input there is: anyone on the network can send any bytes, in any amount, at any speed. Every assumption ("the message arrives in one piece", "the length is reasonable") is a potential bug or vulnerability.
 
+## Session plan
+
+This chapter is long. Work through it in 5 sittings; each one ends with a stop marker.
+
+| Session | Do |
+|---------|----|
+| 1 | Learn §1–3 |
+| 2 | Learn §4–6 |
+| 3 | Exercise 1 — TCP echo |
+| 4 | Exercise 2 — UDP ping |
+| 5 | Exercise 3 — Length-prefixed protocol (framing), then the quiz and recap |
+
 ---
 
 ## Learn
@@ -57,6 +69,8 @@ If the client calls `send` once with 10,000 bytes, the server may get them as on
   - a length prefix: `[4-byte length][payload]` (Exercise 3), or
   - a delimiter: lines ending in `\n`, or
   - the end of the connection: "everything until the sender shuts down" (Exercise 1).
+
+> **Session 1 of 5 complete: a good place to stop.** Check: close this page and explain in your own words: TCP vs UDP; The socket lifecycle; TCP is a byte stream. Stuck on one? Re-read it before moving on.
 
 ### 4. Windows vs POSIX differences
 
@@ -200,6 +214,8 @@ setsockopt(s, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof tv);
 
 After a timeout, `recv` (or `recvfrom` for UDP) returns `-1` (Windows: `SOCKET_ERROR` with `WSAGetLastError() == WSAETIMEDOUT`; POSIX: `errno` is `EAGAIN` or `EWOULDBLOCK`).
 
+> **Session 2 of 5 complete: a good place to stop.** Check: close this page and explain in your own words: Windows vs POSIX differences; Worked example: a TCP client; Timeouts. Stuck on one? Re-read it before moving on.
+
 ---
 
 ## Exercises
@@ -228,6 +244,8 @@ Write two programs: a TCP echo server and a TCP client.
 3. On POSIX, set `SO_REUSEADDR` before `bind` so you can restart the server right away.
 4. Test with your client, and with `nc 127.0.0.1 <port>` (Linux/WSL) or `Test-NetConnection` (PowerShell) to see that it listens.
 
+> **Session 3 of 5 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
+
 ## Exercise 2 — UDP ping
 ### Task
 Implement a UDP “ping” message that receives a reply.
@@ -246,6 +264,8 @@ Implement a UDP “ping” message that receives a reply.
 2. The server replies to the address `recvfrom` filled in.
 3. Use the timeout recipe in Learn §6. Test the timeout by running the client with the server stopped.
 4. One `recvfrom` = one datagram. A buffer smaller than the datagram silently loses the rest, so use a buffer as big as the largest payload you allow.
+
+> **Session 4 of 5 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
 
 ## Exercise 3 — Length-prefixed protocol (framing)
 ### Task

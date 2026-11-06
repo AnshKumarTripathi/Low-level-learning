@@ -16,6 +16,17 @@ By the end of this chapter you will be able to:
 
 Saved games, network protocols, databases and firmware updates are all serialized data. Formats live for years and are read by many programs, so a careless first version is expensive to fix. A decoder that accepts corrupt data silently can be worse than one that crashes.
 
+## Session plan
+
+This chapter is long. Work through it in 4 sittings; each one ends with a stop marker.
+
+| Session | Do |
+|---------|----|
+| 1 | Learn §1–4 |
+| 2 | Exercise 1 — Define a message format (v1) |
+| 3 | Exercise 2 — Add checksum (v2) |
+| 4 | Exercise 3 — Fuzz-ish robustness test (manual), then the quiz and recap |
+
 ---
 
 ## Learn
@@ -108,6 +119,8 @@ Two practical points:
 - Use `srand(seed)` with a seed you print, so any failing case can be reproduced exactly with the same seed.
 - A crash would kill your test program too. Either run the decoder **in a child process** for each mutation (chapter 08) and look at how it exited, or run the whole test under a sanitizer, which turns silent memory errors into crashes you can see.
 
+> **Session 1 of 4 complete: a good place to stop.** Check: close this page and explain in your own words: Designing a format; Checksum, hash, MAC — what each protects against; Worked example: CRC32; Testing a decoder with mutations. Stuck on one? Re-read it before moving on.
+
 ---
 
 ## Exercises
@@ -131,6 +144,8 @@ Define a binary format for a message with fields:
 3. `decode` must reject: a wrong version, a file shorter than 6 bytes, a length above the maximum, and a length that does not match the bytes actually present (both too few **and** too many).
 4. Round-trip test: `encode` then `decode` must give back a payload identical to the input (`fc /b` or `cmp`).
 
+> **Session 2 of 4 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
+
 ## Exercise 2 — Add checksum (v2)
 ### Task
 Extend the format to include a checksum of the payload (choose CRC32 or another simple checksum).
@@ -144,6 +159,8 @@ Extend the format to include a checksum of the payload (choose CRC32 or another 
 1. Bump the version byte to 2, and decide: does the v2 decoder still accept v1 files? Document the choice.
 2. Put the 4-byte CRC after the length, before the payload, so the decoder can read the whole header first.
 3. Test: change one byte of the payload in a hex editor or with a tiny program, and expect `checksum: mismatch`.
+
+> **Session 3 of 4 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
 
 ## Exercise 3 — Fuzz-ish robustness test (manual)
 ### Task

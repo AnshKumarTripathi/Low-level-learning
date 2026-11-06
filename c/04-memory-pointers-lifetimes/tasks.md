@@ -17,6 +17,19 @@ By the end of this chapter you will be able to:
 
 Almost every serious C bug — crashes, data corruption, security holes — is a memory bug: something used after it died, written past its end, freed twice, or never freed. C will not stop you. Your only defence is a clear mental model of **who owns each block of memory and how long it lives**, plus tools that check you.
 
+## Session plan
+
+This chapter is long. Work through it in 6 sittings; each one ends with a stop marker.
+
+| Session | Do |
+|---------|----|
+| 1 | Learn §1–3 |
+| 2 | Learn §4–6 |
+| 3 | Exercise 1 — Dynamic array (int) |
+| 4 | Exercise 2 — String utilities (safe subset) |
+| 5 | Exercise 3 — Ownership practice: “arena” allocator (tiny) |
+| 6 | Exercise 4 — UB museum (learn by breaking), then the quiz and recap |
+
 ---
 
 ## Learn
@@ -109,6 +122,8 @@ void vec_free(Vec *v);    /* frees everything init and push allocated; safe to c
 ```
 
 **Rule:** whoever calls `init` must call `free`, exactly once, on every path. Write that rule in a comment above the function.
+
+> **Session 1 of 6 complete: a good place to stop.** Check: close this page and explain in your own words: Three storage durations; `malloc`, `calloc`, `realloc`, `free`; `typedef` and the `init`/`free` API style. Stuck on one? Re-read it before moving on.
 
 ### 4. Worked example: read a line of any length
 
@@ -209,6 +224,8 @@ Undefined behavior does not mean "crashes". It means **the compiler may assume i
 
 Each exercise lists hints. Read them only when stuck.
 
+> **Session 2 of 6 complete: a good place to stop.** Check: close this page and explain in your own words: Worked example: read a line of any length; Alignment; A field guide to undefined behavior. Stuck on one? Re-read it before moving on.
+
 ## Exercise 1 — Dynamic array (int)
 ### Task
 Implement a dynamic array of integers with explicit initialization and cleanup.
@@ -240,6 +257,8 @@ Implement a dynamic array of integers with explicit initialization and cleanup.
 5. Read commands with `fgets` + `sscanf`, as in the Module J boss challenge.
 6. Test under a sanitizer: 1000 pushes, then 1000 pops, then one more pop.
 
+> **Session 3 of 6 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
+
 ## Exercise 2 — String utilities (safe subset)
 ### Task
 Write safe versions of common string utilities using explicit buffer sizes.
@@ -261,6 +280,8 @@ Write safe versions of common string utilities using explicit buffer sizes.
 3. For concat, first find the current end of `dst` — but never search past `dst_size`.
 4. Test the edge cases: `dst_size` of 0 and 1, empty source, source exactly `dst_size - 1` long.
 
+> **Session 4 of 6 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
+
 ## Exercise 3 — Ownership practice: “arena” allocator (tiny)
 ### Task
 Create a simple arena allocator that allocates from a preallocated buffer.
@@ -277,6 +298,8 @@ Create a simple arena allocator that allocates from a preallocated buffer.
 2. Round the offset up to 8 (or `_Alignof(max_align_t)` from `<stddef.h>`) before each allocation (Learn §5).
 3. Check `size > total - aligned_offset` instead of `aligned_offset + size > total`: the first form cannot overflow.
 4. Only the arena's own buffer is `malloc`ed and `free`d; the pieces it hands out are never freed one by one.
+
+> **Session 5 of 6 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
 
 ## Exercise 4 — UB museum (learn by breaking)
 ### Task

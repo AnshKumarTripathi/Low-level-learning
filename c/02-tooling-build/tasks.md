@@ -2,6 +2,8 @@
 
 [← 01 — Mental model](../01-low-level-mental-model/tasks.md) · [Roadmap](../../ROADMAP.md) · [Next: 03 — C language II →](../03-c-language-ii/tasks.md) · [C++ twin: c_plus/01](../../c_plus/01-tooling-build/tasks.md)
 
+> Time: about 10–14 hours · Prerequisites: C 00, C 01 · You will build: strict builds, debugging drills, a Makefile and a test suite.
+
 ## Objectives
 - Make builds repeatable and strict (warnings, debug/release).
 - Learn to debug crashes and inspect stack traces.
@@ -17,6 +19,20 @@
 - **No third-party libraries**.
 - **No interactive UI**; everything is CLI-driven.
 - Programs must return **exit code `0` on success**, non-zero on failure.
+
+## Session plan
+
+This chapter is long. Work through it in 7 sittings; each one ends with a stop marker.
+
+| Session | Do |
+|---------|----|
+| 1 | Learn §1–3 |
+| 2 | Learn §4–5 |
+| 3 | Exercise 1 — Build modes sanity |
+| 4 | Exercise 2 — Warnings-as-errors baseline |
+| 5 | Exercise 3 — Debugger drill |
+| 6 | Exercise 4 — Memory checker drill |
+| 7 | Exercise 5 — A Makefile and a test suite, then the quiz and recap |
 
 ## Learn
 
@@ -141,6 +157,8 @@ Thread 1 received signal SIGILL, Illegal instruction.
 
 For the full set of checks on Windows, use **WSL2** (see [Setup](../../00-setup/README.md)) or MSVC.
 
+> **Session 1 of 7 complete: a good place to stop.** Check: close this page and explain in your own words: Debug vs release builds; Your first debugger session; Sanitizers: catch memory bugs while the program runs. Stuck on one? Re-read it before moving on.
+
 ### 4. `make`: rebuild only what changed
 
 Typing long `gcc` commands gets old fast, and with many files you forget one. **`make`** reads a file called `Makefile` that lists **targets**, what each one **depends on**, and the **command** that builds it:
@@ -226,6 +244,8 @@ What to test, for every function:
 
 Keep functions in their own `.c` file (not in the file with `main`), and you can link the **same** code into the real program and into the test program. Add a `test` target that builds and runs the tests, and `make test` becomes your one-word safety net.
 
+> **Session 2 of 7 complete: a good place to stop.** Check: close this page and explain in your own words: `make`: rebuild only what changed; Testing: let the computer check your code. Stuck on one? Re-read it before moving on.
+
 ## Exercise 1 — Build modes sanity
 ### Task
 Create a tiny CLI program that prints build information and can intentionally crash.
@@ -243,6 +263,8 @@ Create a tiny CLI program that prints build information and can intentionally cr
 ### Edge cases
 - Unknown flags → print usage and return non-zero.
 
+> **Session 3 of 7 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
+
 ## Exercise 2 — Warnings-as-errors baseline
 ### Task
 Set up compilation so that common warnings fail the build.
@@ -253,6 +275,8 @@ Set up compilation so that common warnings fail the build.
   - implicit conversions that lose data (if your compiler supports warnings)
   - missing prototypes / implicit declarations (C-specific)
 
+> **Session 4 of 7 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
+
 ## Exercise 3 — Debugger drill
 ### Task
 Create a program that has 3 nested function calls and fails at the deepest level.
@@ -262,6 +286,8 @@ Create a program that has 3 nested function calls and fails at the deepest level
 - When run under a debugger, you can obtain:
   - a backtrace showing all 3 functions
   - the source line where it crashed
+
+> **Session 5 of 7 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
 
 ## Exercise 4 — Memory checker drill
 ### Task
@@ -279,6 +305,8 @@ Create a program with each of the following bugs (in separate runs or separate m
 2. Exercise 2: start from `-Wall -Wextra -Werror`, then add `-Wconversion` and `-Wmissing-prototypes`. Write a small file that contains each mistake and confirm the build fails for each one.
 3. Exercise 3: the `crash.c` program in Learn §2 *is* the shape you need; write your own version with different names, and practise `frame 1`, `print`, then `up`/`down` between frames.
 4. Exercise 4: one command-line flag per bug, like `--leak`, `--oob`, `--uaf`. For the out-of-bounds write, use a fixed-size array so UBSan's bounds check can see the size.
+
+> **Session 6 of 7 complete: a good place to stop.** Check: your program gives the desired output and handles the edge cases of this exercise.
 
 ## Exercise 5 — A Makefile and a test suite
 ### Task
