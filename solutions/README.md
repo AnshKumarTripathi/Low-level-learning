@@ -17,6 +17,6 @@ There is often more than one good solution. Yours does not have to match line fo
 | Graphics track G1–G7 | [c/graphics](c/graphics/README.md) |
 | C++ bridge B1–B8 (one exercise per chapter) | [cpp/bridge](cpp/bridge/README.md) |
 
-Module J (the boss challenge) has **no** published solution on purpose: it is the pass/fail gate for chapter 00. Use its hints and the automatic check in `c/00-foundation/tests/` instead.
+Module J (the boss challenge) has **no** published solution on purpose (only its optional tic-tac-toe bonus does): it is the pass/fail gate for chapter 00. Use its hints and the automatic check in `c/00-foundation/tests/` instead.
 
 Every solution here was compiled with `-Wall -Wextra -Wpedantic -Werror` (GCC 13, Windows) and run against the exercise's desired output, including the error cases. Milestone projects (`milestones/`) and the capstone have no published solutions.

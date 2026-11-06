@@ -8,10 +8,13 @@ Milestones are larger projects that combine several chapters. Each one has a fix
 |---|---------|-------------|------|------|
 | M0 | Student roster | C 00 | Modules A–I | (Module J — the chapter 00 gate) |
 | M0.5 | Mandelbrot poster (PPM image) | C 01 | C 00, C 01 Subchapter G | 4–8 h |
+| — | Game: Hangman, see below | C 03 | C 00, C 03 | 3–5 h |
 | M1 | `strlib` — a safe string library | C 04 | C 03, C 04 | 8–12 h |
 | M2 | `hashmap` — a reusable hash map | C 06 | C 04, C 05, C 06 | 12–16 h |
+| — | Game: Worm, see below | C 06 | C 03, C 04, C 06 | 6–10 h |
 | M3 | `minish` — a mini shell | C 08 | C 03, C 08 | 12–16 h |
 | M4 | `kvserver` — a threaded key-value server | C 10 | M2, C 07, C 09, C 10 | 20–30 h |
+| — | Game: Fleet Duel, see below | C 10 | C 09, C 10 | 12–18 h |
 | M5 | `mymalloc` — your own allocator under M2 | C 13 | M2, C 11, C 13 | 15–20 h |
 | G8 | Tiny game engine + your own game ([spec](../graphics/G8-engine-milestone.md)) | Graphics G7 | G1–G7, C 03, C 04, C 06 | 25–40 h |
 | C++ M1 | Rewrite M0 and M2 in modern C++ | Bridge B4 | B1–B5 | 10–15 h |
@@ -210,3 +213,99 @@ size_t str_split(char *s, char sep, char **parts, size_t max_parts);   /* in pla
 | No manual memory management | must | no `new`, `delete`, `malloc`, `free` |
 | Idiomatic | | algorithms and ranges instead of raw loops where clearer |
 | Comparison write-up | | lines of code, bugs that became impossible, speed vs the C version and vs `std::unordered_map` |
+
+---
+
+## Game milestones
+
+Three games spread through the C chapters, so you keep building things you can play. Grading works as for the other milestones, and there are no published solutions. Your own word lists, names and art are encouraged.
+
+Interactive games are hard to test by hand, so each one reads moves from standard input. You can then replay a saved game: `./game < moves.txt`. Any randomness takes a `--seed N` option, so the same seed and moves always give the same output.
+
+### Game: Hangman (after C 03)
+
+**Goal:** guess a hidden word one letter at a time, with the words loaded from a text file.
+
+**Interface:** `hangman WORDS_FILE [--seed N]`
+
+**Rules:**
+- The file has one word per line. Accept only lines of 1–31 letters, stored in lowercase. Skip anything else with `warning: FILE:<line>: skipping bad line` on stderr. Read at most 1,000 words. No usable words: an error on stderr, exit `1`.
+- Each turn prints the word with hidden letters as `_` (`h _ l l _`), the letters tried, and the wrong guesses left (start at 6). Draw the hangman or anything else you like in ASCII.
+- Read one line per guess. Accept upper or lower case. A repeated letter costs nothing. Anything that is not a single letter prints `one letter please`.
+- End with `you win: <word>` or `you lose: <word>`, exit `0`. End of input: exit `1`.
+
+**Tests to pass** (a one-word file makes the secret known):
+- A winning game, a losing game, a repeated letter, and bad input (`ab`, `7`, an empty line).
+- A missing file, an empty file, and a file with a 100-character line (no overflow).
+
+| Criterion | Must? | 2 points means |
+|-----------|-------|----------------|
+| All tests pass | must | every case above behaves as specified |
+| File input is validated | must | bad lines warned about with the right line number |
+| Same seed, same word | | two runs with one seed pick the same word |
+| Clean functions | | loading, display and guess checking are separate |
+| No warnings with `-Werror` | must | builds clean |
+
+**Stretch:** save wins and losses using the high-score tool from C 03 Exercise 5.
+
+### Game: Worm (after C 06)
+
+**Goal:** a worm moves around a grid eating food and grows. Hitting a wall or itself ends the game. It is turn-based, so it needs no special keyboard handling.
+
+**Interface:** `worm [--width W] [--height H] [--seed N]` (default 20 × 10; each side `5`–`60`).
+
+**Rules:**
+- Draw the grid with `#` walls, `@` head, `o` body and `*` food, and print `score=<n>` below it.
+- Each turn, read a line: `w`, `a`, `s` or `d` sets the direction, and an empty line keeps it. Anything else prints `use w, a, s, d`, and the worm does not move. Reversing straight into your own neck is ignored.
+- Each move, the head advances one cell. Eating food adds 1 to the score, grows the worm and places new food on a random free cell. Otherwise the tail cell is freed.
+- Hitting a wall or the body prints `game over score=<n>` and exits `0`. End of input: the same message, exit `0`.
+
+**Data structure:** store the body in a structure from C 06 (a linked list or a ring buffer), with each move costing O(1) however long the worm is. Allocate and free it properly (C 04).
+
+**Tests to pass:**
+- Scripted games with a fixed `--seed`: hit a wall, hit your own body, eat food and grow.
+- A test where moving into the cell the tail is leaving this turn is handled the way your README says.
+- A full-grid test on a 5 × 5 board: when no free cell remains, print `you win` and exit `0`, without looping forever looking for one.
+- ASan/UBSan (Linux/WSL) clean, with no leaks at exit.
+
+| Criterion | Must? | 2 points means |
+|-----------|-------|----------------|
+| Scripted games are repeatable | must | same seed and moves give identical output |
+| O(1) move | must | no shifting of the whole body each turn |
+| Full-grid case handled | must | the game ends and does not hang |
+| No memory errors or leaks | must | sanitizers clean |
+| No warnings with `-Werror` | must | builds clean |
+| Someone else enjoys it | | they play twice without being asked |
+
+**Stretch:** real-time play. Read keys without Enter using `<conio.h>` (`_kbhit`, `_getch`) on Windows or `termios` and non-blocking input on Linux/macOS. Keep the game logic in functions that do not know how input arrives, so your scripted tests still run.
+
+### Game: Fleet Duel (after C 10)
+
+**Goal:** two players on two machines (or two terminals) place hidden ships on a grid and take turns firing, over TCP.
+
+**Interface:** `fleet host <port>` waits for an opponent; `fleet join <host> <port>` connects. Ship layouts come from a file: `--fleet FILE`.
+
+**Rules:**
+- A 10 × 10 grid with ships of length 5, 4, 3, 3 and 2. Each file line is `<length> <row> <col> <h|v>`. Reject overlaps, ships off the grid and wrong ship sets, with an error before connecting.
+- The host fires first. Each shot gets a reply: `miss`, `hit`, `sunk` or `win`.
+- Design a framed message format (C 09 Exercise 3): every message has a type and a length, and is checked before use.
+- Each program holds the truth about its own ships only. It must **never** send its layout to the opponent: a cheating client should learn only what its shots reveal.
+- One thread reads from the network and another handles the user, sharing state safely through a queue or mutex (C 10), so `quit` works even while waiting for the opponent.
+
+**Tests to pass:**
+- A scripted full game between two local processes, ending with one `win`, with moves from files.
+- Bad peers: a test client sends an oversized length, an unknown type, a shot off the grid, a repeated shot, a shot out of turn, and a disconnect mid-game. The program reports each and exits cleanly, with no crash.
+- Bad fleet files for each rejection above.
+- ThreadSanitizer (Linux/WSL) clean over a full game.
+
+| Criterion | Must? | 2 points means |
+|-----------|-------|----------------|
+| A full game works across two processes | must | scripted game finishes with the right winner |
+| Malformed messages are survived | must | every bad-peer test exits cleanly |
+| Layout stays private | must | no message contains ship positions |
+| No data races | must | ThreadSanitizer clean |
+| Protocol documented | | a short file describes every message |
+| No warnings with `-Werror` | must | builds clean |
+
+**Stretch:** let spectators connect, or add a reconnect that resumes the game.
+
